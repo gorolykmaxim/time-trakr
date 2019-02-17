@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#4CAF50</color>
+    <color name="colorPrimaryDark">#EEEEEE</color>
+    <color name="colorAccent">#4CAF50</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorHeroText">@android:color/black</color>
+    <color name="deleteRed">#F44336</color>
+    <color name="copyGreen">#4CAF50</color>
+    <color name="transparent">#00000000</color>
+</resources>

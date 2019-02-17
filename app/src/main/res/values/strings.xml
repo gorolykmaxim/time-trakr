@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Time Trakr</string>
+    <string name="what_task_are_you_working_on">What task are you working on?</string>
+    <string name="activities">Activities</string>
+    <string name="results">Results</string>
+    <string name="delete_activity_warning">Are you sure you want to delete \'%s\' started at %s?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="activity_name_too_short">Activity name should be at least %d characters long.</string>
+    <string name="since">since %s</string>
+    <string name="work_logs_for_today">Work logs for today</string>
+    <string name="start">Start</string>
+</resources>
