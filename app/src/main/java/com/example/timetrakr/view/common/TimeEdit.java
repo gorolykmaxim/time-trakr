@@ -2,32 +2,42 @@ package com.example.timetrakr.view.common;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.util.AttributeSet;
 import android.widget.TextView;
+
+import com.example.timetrakr.R;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-/**
- * Facade for a text view, that displays specified time and opens up a time picker dialog
- * when you click on it.
- */
-public class DateEditView {
+import androidx.annotation.Nullable;
 
-    private TextView textView;
-    private String startTimeTemplate;
-    private DateTimeFormatter formatter;
+/**
+ * View, that displays specified time and opens up a time picker dialog when you click on it.
+ */
+public class TimeEdit extends TextView {
+
+    private String displayFormat;
     private LocalDateTime currentDateTime;
-    private OnDateChangeListener onDateChangeListener;
+    private DateTimeFormatter formatter;
     private TimePickerDialogFactory factory;
 
     /**
-     * Construct the view.
+     * Construct a time edit view.
+     *
+     * @param context context in scope of which the view is displayed.
+     * @param attrs attributes to initialize view with
      */
-    public DateEditView() {
-        factory = new TimePickerDialogFactory();
+    public TimeEdit(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.TimeEdit);
         currentDateTime = LocalDateTime.now();
+        displayFormat = attributes.getString(R.styleable.TimeEdit_display_format);
+        factory = new TimePickerDialogFactory();
+        attributes.recycle();
     }
 
     /**
@@ -45,26 +55,14 @@ public class DateEditView {
      *
      * @param onDateChangeListener listener to call on a date change
      */
-    public void setOnDateChangeListener(OnDateChangeListener onDateChangeListener) {
-        this.onDateChangeListener = onDateChangeListener;
-    }
-
-    /**
-     * Specify text view to display time in and listen to click events on.
-     *
-     * @param textView text view to use
-     */
-    public void setTextView(TextView textView) {
-        this.textView = textView;
-        textView.setOnClickListener(v -> {
+    public void setOnDateChangeListener(OnDateChangedListener onDateChangeListener) {
+        setOnClickListener(v -> {
             TimePickerDialog.OnTimeSetListener listener = (view, hourOfDay, minute) -> {
                 LocalDateTime dateTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(hourOfDay, minute));
                 update(dateTime);
-                if (onDateChangeListener != null) {
-                    onDateChangeListener.onDateChange(dateTime);
-                }
+                onDateChangeListener.onDateChange(dateTime);
             };
-            TimePickerDialog dialog = factory.create(textView.getContext(), listener, currentDateTime.getHour(), currentDateTime.getMinute(), true);
+            TimePickerDialog dialog = factory.create(getContext(), listener, currentDateTime.getHour(), currentDateTime.getMinute(), true);
             dialog.show();
         });
     }
@@ -72,10 +70,10 @@ public class DateEditView {
     /**
      * Specify string template, used to display time on the text view.
      *
-     * @param startTimeTemplate time display template
+     * @param displayFormat time display template
      */
-    public void setStartTimeTemplate(String startTimeTemplate) {
-        this.startTimeTemplate = startTimeTemplate;
+    public void setDisplayFormat(String displayFormat) {
+        this.displayFormat = displayFormat;
     }
 
     /**
@@ -90,13 +88,13 @@ public class DateEditView {
     /**
      * Display specified date-time in the text view.
      *
-     * <p>Calling this method will not trigger a {@link OnDateChangeListener}.</p>
+     * <p>Calling this method will not trigger a {@link OnDateChangedListener}.</p>
      *
      * @param dateTime date-time to display
      */
     public void update(LocalDateTime dateTime) {
         currentDateTime = dateTime;
-        textView.setText(String.format(startTimeTemplate, dateTime.format(formatter)));
+        setText(String.format(displayFormat, dateTime.format(formatter)));
     }
 
     /**
@@ -122,7 +120,7 @@ public class DateEditView {
     /**
      * Listener called when user selects time in the opened time picker dialog.
      */
-    public interface OnDateChangeListener {
+    public interface OnDateChangedListener {
 
         /**
          * Callback called on date-time selected.

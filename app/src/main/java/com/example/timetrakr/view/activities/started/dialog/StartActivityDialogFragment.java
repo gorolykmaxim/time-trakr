@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.timetrakr.R;
-import com.example.timetrakr.view.common.DateEditView;
+import com.example.timetrakr.view.common.TimeEdit;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.time.LocalDateTime;
@@ -23,23 +23,17 @@ import androidx.fragment.app.DialogFragment;
 public class StartActivityDialogFragment extends BottomSheetDialogFragment {
 
     private State state;
-    private DateEditView startDateEditView;
+    private DateTimeFormatter formatter;
 
     public StartActivityDialogFragment() {
-        startDateEditView = new DateEditView();
         state = new State(this);
         state.setStartDate(LocalDateTime.now());
     }
 
-    public static StartActivityDialogFragment create(String startTimeTemplate, DateTimeFormatter formatter) {
+    public static StartActivityDialogFragment create(DateTimeFormatter formatter) {
         StartActivityDialogFragment dialogFragment = new StartActivityDialogFragment();
-        dialogFragment.startDateEditView.setStartTimeTemplate(startTimeTemplate);
-        dialogFragment.startDateEditView.setFormatter(formatter);
+        dialogFragment.formatter = formatter;
         return dialogFragment;
-    }
-
-    public void setStartDateEditView(DateEditView startDateEditView) {
-        this.startDateEditView = startDateEditView;
     }
 
     public void setListener(OnStartActivityListener listener) {
@@ -75,9 +69,10 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment {
             }
         });
         activityNameEditText.addTextChangedListener(new ActivityNameListener(state));
-        startDateEditView.setTextView(viewGroup.findViewById(R.id.start_activity_dialog_time));
-        startDateEditView.update(startDate);
-        startDateEditView.setOnDateChangeListener(state::setStartDate);
+        TimeEdit timeEdit = viewGroup.findViewById(R.id.start_activity_dialog_time);
+        timeEdit.setFormatter(formatter);
+        timeEdit.update(startDate);
+        timeEdit.setOnDateChangeListener(state::setStartDate);
         Button startButton = viewGroup.findViewById(R.id.start_activity_dialog_start_button);
         startButton.setOnClickListener(v -> state.start());
         return viewGroup;

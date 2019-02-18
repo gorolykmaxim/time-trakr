@@ -61,7 +61,7 @@ public class ActivitiesStartedFragment extends Fragment {
         };
         // Open bottom sheet dialog to create new activity when clicking on a FAB.
         View.OnClickListener startActivityButtonListener = v -> {
-            StartActivityDialogFragment startActivityDialogFragment = StartActivityDialogFragment.create(getString(R.string.since), formatter);
+            StartActivityDialogFragment startActivityDialogFragment = StartActivityDialogFragment.create(formatter);
             startActivityDialogFragment.setListener((activityName, startDate) -> {
                 viewModel.startNewActivity(activityName, startDate, newActivityNameIsTooShortListener);
             });
@@ -106,7 +106,7 @@ public class ActivitiesStartedFragment extends Fragment {
             adapter.notifyItemChanged(viewHolder.getAdapterPosition());
             ActivityStartViewHolder holder = (ActivityStartViewHolder)viewHolder;
             String name = holder.getActivityName();
-            StartActivityDialogFragment startActivityDialogFragment = StartActivityDialogFragment.create(getString(R.string.since), formatter);
+            StartActivityDialogFragment startActivityDialogFragment = StartActivityDialogFragment.create(formatter);
             startActivityDialogFragment.setActivityName(name);
             startActivityDialogFragment.setListener((activityName, startDate) -> {
                 viewModel.startNewActivity(activityName, startDate, newActivityNameIsTooShortListener);

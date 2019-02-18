@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.timetrakr.R;
-import com.example.timetrakr.view.common.DateEditView;
+import com.example.timetrakr.view.common.TimeEdit;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,25 +31,24 @@ import androidx.fragment.app.DialogFragment;
 @PrepareForTest({DialogFragment.class})
 public class StartActivityDialogFragmentTest {
 
+    private DateTimeFormatter formatter;
     private StartActivityDialogFragment dialogFragment;
-    private DateEditView dateEditView;
     private StartActivityDialogFragment.OnStartActivityListener listener;
     private LayoutInflater inflater;
     private ViewGroup container, viewGroup;
     private EditText activityNameEditText;
-    private TextView startDateTextView;
+    private TimeEdit timeEdit;
     private Button startButton;
     private ArgumentCaptor<View.OnClickListener> onStartClickCaptor;
     private ArgumentCaptor<TextView.OnEditorActionListener> onEditorActionCaptor;
     private ArgumentCaptor<TextWatcher> textWatcherCaptor;
     private ArgumentCaptor<LocalDateTime> startDateCaptor;
-    private ArgumentCaptor<DateEditView.OnDateChangeListener> onDateChangeCaptor;
+    private ArgumentCaptor<TimeEdit.OnDateChangedListener> onDateChangeCaptor;
 
     @Before
     public void setUp() throws Exception {
-        dialogFragment = StartActivityDialogFragment.create("since %s", DateTimeFormatter.ofPattern("HH:mm"));
-        dateEditView = Mockito.mock(DateEditView.class);
-        dialogFragment.setStartDateEditView(dateEditView);
+        formatter = DateTimeFormatter.ofPattern("HH:mm");
+        dialogFragment = StartActivityDialogFragment.create(formatter);
         listener = Mockito.mock(StartActivityDialogFragment.OnStartActivityListener.class);
         dialogFragment.setListener(listener);
         // Initialize android views.
@@ -58,8 +57,8 @@ public class StartActivityDialogFragmentTest {
         viewGroup = Mockito.mock(ViewGroup.class);
         activityNameEditText = Mockito.mock(EditText.class);
         Mockito.when(viewGroup.findViewById(R.id.start_activity_dialog_activity_name)).thenReturn(activityNameEditText);
-        startDateTextView = Mockito.mock(TextView.class);
-        Mockito.when(viewGroup.findViewById(R.id.start_activity_dialog_time)).thenReturn(startDateTextView);
+        timeEdit = Mockito.mock(TimeEdit.class);
+        Mockito.when(viewGroup.findViewById(R.id.start_activity_dialog_time)).thenReturn(timeEdit);
         startButton = Mockito.mock(Button.class);
         Mockito.when(viewGroup.findViewById(R.id.start_activity_dialog_start_button)).thenReturn(startButton);
         Mockito.when(inflater.inflate(R.layout.start_activity_dialog, container, false)).thenReturn(viewGroup);
@@ -69,7 +68,7 @@ public class StartActivityDialogFragmentTest {
         onEditorActionCaptor = ArgumentCaptor.forClass(TextView.OnEditorActionListener.class);
         textWatcherCaptor = ArgumentCaptor.forClass(TextWatcher.class);
         startDateCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
-        onDateChangeCaptor = ArgumentCaptor.forClass(DateEditView.OnDateChangeListener.class);
+        onDateChangeCaptor = ArgumentCaptor.forClass(TimeEdit.OnDateChangedListener.class);
     }
 
     @Test
@@ -122,7 +121,7 @@ public class StartActivityDialogFragmentTest {
         TextWatcher textWatcher = textWatcherCaptor.getValue();
         textWatcher.onTextChanged(name, 0, 0, 0);
         // Set start time.
-        DateEditView.OnDateChangeListener onDateChange = onDateChangeCaptor.getValue();
+        TimeEdit.OnDateChangedListener onDateChange = onDateChangeCaptor.getValue();
         onDateChange.onDateChange(expectedStartDate);
         // Press start.
         View.OnClickListener onStartClick = onStartClickCaptor.getValue();
@@ -133,9 +132,9 @@ public class StartActivityDialogFragmentTest {
     private void viewStateInitialization() {
         Mockito.verify(activityNameEditText).setOnEditorActionListener(onEditorActionCaptor.capture());
         Mockito.verify(activityNameEditText).addTextChangedListener(textWatcherCaptor.capture());
-        Mockito.verify(dateEditView).setTextView(startDateTextView);
-        Mockito.verify(dateEditView).update(startDateCaptor.capture());
-        Mockito.verify(dateEditView).setOnDateChangeListener(onDateChangeCaptor.capture());
+        Mockito.verify(timeEdit).setFormatter(formatter);
+        Mockito.verify(timeEdit).update(startDateCaptor.capture());
+        Mockito.verify(timeEdit).setOnDateChangeListener(onDateChangeCaptor.capture());
         LocalDateTime dateTime = startDateCaptor.getValue();
         Assert.assertTrue(dateTime.compareTo(LocalDateTime.now()) <= 0);
         Mockito.verify(startButton).setOnClickListener(onStartClickCaptor.capture());
