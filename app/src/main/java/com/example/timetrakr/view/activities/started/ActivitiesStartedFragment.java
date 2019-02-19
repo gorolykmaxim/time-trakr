@@ -96,6 +96,7 @@ public class ActivitiesStartedFragment extends Fragment {
                     .setPositiveButton(R.string.delete, (dlg, id) -> viewModel.deleteActivityStart(name, dateTime.toString()))
                     .setNegativeButton(R.string.cancel, (dlg, id) -> adapter.notifyItemChanged(viewHolder.getAdapterPosition()))
                     .create();
+            dialog.setOnDismissListener(dlg -> adapter.notifyItemChanged(viewHolder.getAdapterPosition()));
             dialog.show();
         };
         callback.setLeftSwipe(icon, background, listener);
