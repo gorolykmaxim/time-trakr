@@ -9,9 +9,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         style="@style/HeroText"
-        android:paddingBottom="10sp"
         android:paddingStart="20sp"
         android:text="@string/work_logs_for_today"/>
+    <com.example.timetrakr.view.common.ClosableTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/total_duration"
+        android:visibility="invisible"/>
     <androidx.recyclerview.widget.RecyclerView android:id="@+id/activities_durations_recycler_view"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"

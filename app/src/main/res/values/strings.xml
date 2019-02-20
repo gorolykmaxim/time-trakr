@@ -10,4 +10,5 @@
     <string name="since">since %s</string>
     <string name="work_logs_for_today">Work logs for today</string>
     <string name="start">Start</string>
+    <string name="total_duration">Total duration: %s</string>
 </resources>
