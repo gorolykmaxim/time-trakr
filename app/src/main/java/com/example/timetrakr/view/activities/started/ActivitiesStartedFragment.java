@@ -92,10 +92,11 @@ public class ActivitiesStartedFragment extends Fragment {
             AlertDialog dialog = new AlertDialog.Builder(getActivity())
                     .setMessage(warning)
                     .setPositiveButton(R.string.delete, (dlg, id) -> viewModel.deleteActivityStart(name, dateTime.toString()))
-                    .setNegativeButton(R.string.cancel, (dlg, id) -> {})
+                    .setNegativeButton(R.string.cancel, (dlg, id) -> dlg.cancel())
                     .create();
+            dialog.setOnCancelListener(dlg -> adapter.notifyItemChanged(viewHolder.getAdapterPosition()));
+            dialog.setCancelable(true);
             dialog.show();
-            dialog.setOnDismissListener(dlg -> adapter.notifyItemChanged(viewHolder.getAdapterPosition()));
         };
         callback.setLeftSwipe(icon, background, listener);
         // Enable swipe right to prolong existing activity.
