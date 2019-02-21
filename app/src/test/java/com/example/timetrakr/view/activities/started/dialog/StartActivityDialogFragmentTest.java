@@ -1,5 +1,6 @@
 package com.example.timetrakr.view.activities.started.dialog;
 
+import android.content.DialogInterface;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -50,7 +51,7 @@ public class StartActivityDialogFragmentTest {
         formatter = DateTimeFormatter.ofPattern("HH:mm");
         dialogFragment = StartActivityDialogFragment.create(formatter);
         listener = Mockito.mock(StartActivityDialogFragment.OnStartActivityListener.class);
-        dialogFragment.setListener(listener);
+        dialogFragment.setOntStartActivityListener(listener);
         // Initialize android views.
         inflater = Mockito.mock(LayoutInflater.class);
         container = Mockito.mock(ViewGroup.class);
@@ -127,6 +128,15 @@ public class StartActivityDialogFragmentTest {
         View.OnClickListener onStartClick = onStartClickCaptor.getValue();
         onStartClick.onClick(startButton);
         Mockito.verify(listener).onStartActivity(name, expectedStartDate);
+    }
+
+    @Test
+    public void cancelDialog() {
+        DialogInterface dialog = Mockito.mock(DialogInterface.class);
+        DialogInterface.OnCancelListener onCancelListener = Mockito.mock(DialogInterface.OnCancelListener.class);
+        dialogFragment.setOnCancelListener(onCancelListener);
+        dialogFragment.onCancel(dialog);
+        Mockito.verify(onCancelListener).onCancel(dialog);
     }
 
     private void viewStateInitialization() {

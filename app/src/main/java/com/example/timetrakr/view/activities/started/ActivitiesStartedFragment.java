@@ -10,7 +10,8 @@ import android.widget.Toast;
 
 import com.example.timetrakr.R;
 import com.example.timetrakr.model.activity.events.NewActivityNameIsTooShortException;
-import com.example.timetrakr.view.activities.started.dialog.StartActivityDialogFragment;
+import com.example.timetrakr.view.activities.started.dialog.StartActivityDialogDisplayer;
+import com.example.timetrakr.view.activities.started.dialog.StartActivityDialogDisplayerFactory;
 import com.example.timetrakr.view.common.recycler.LeftRightCallback;
 import com.example.timetrakr.viewmodel.activities.started.ActivitiesStartedViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -33,7 +34,7 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 public class ActivitiesStartedFragment extends Fragment {
 
-    private static final String START_ACTIVITY_DIALOG = "start_activity_dialog";
+    private StartActivityDialogDisplayer startActivityDialogDisplayer;
 
     /**
      * {@inheritDoc}
@@ -59,15 +60,12 @@ public class ActivitiesStartedFragment extends Fragment {
             String message = String.format(getString(R.string.activity_name_too_short), e.getExpectedMinimalLength());
             Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
         };
+        // Initialize start activity dialog displayer.
+        StartActivityDialogDisplayerFactory dialogFactory = new StartActivityDialogDisplayerFactory(formatter);
+        startActivityDialogDisplayer = new StartActivityDialogDisplayer(dialogFactory, "start_activity_dialog");
+        startActivityDialogDisplayer.setOnStartActivityListener((activityName, startDate) -> viewModel.startNewActivity(activityName, startDate, newActivityNameIsTooShortListener));
         // Open bottom sheet dialog to create new activity when clicking on a FAB.
-        View.OnClickListener startActivityButtonListener = v -> {
-            StartActivityDialogFragment startActivityDialogFragment = StartActivityDialogFragment.create(formatter);
-            startActivityDialogFragment.setListener((activityName, startDate) -> {
-                viewModel.startNewActivity(activityName, startDate, newActivityNameIsTooShortListener);
-            });
-            startActivityDialogFragment.show(getChildFragmentManager(), START_ACTIVITY_DIALOG);
-        };
-        startActivityButton.setOnClickListener(startActivityButtonListener);
+        startActivityButton.setOnClickListener(v -> startActivityDialogDisplayer.display(getChildFragmentManager()));
         /*
         Initialize recycler view that displays all started activities.
          */
@@ -96,8 +94,8 @@ public class ActivitiesStartedFragment extends Fragment {
                     .setPositiveButton(R.string.delete, (dlg, id) -> viewModel.deleteActivityStart(name, dateTime.toString()))
                     .setNegativeButton(R.string.cancel, (dlg, id) -> adapter.notifyItemChanged(viewHolder.getAdapterPosition()))
                     .create();
-            dialog.setOnDismissListener(dlg -> adapter.notifyItemChanged(viewHolder.getAdapterPosition()));
             dialog.show();
+            dialog.setOnDismissListener(dlg -> adapter.notifyItemChanged(viewHolder.getAdapterPosition()));
         };
         callback.setLeftSwipe(icon, background, listener);
         // Enable swipe right to prolong existing activity.
@@ -107,12 +105,7 @@ public class ActivitiesStartedFragment extends Fragment {
             adapter.notifyItemChanged(viewHolder.getAdapterPosition());
             ActivityStartViewHolder holder = (ActivityStartViewHolder)viewHolder;
             String name = holder.getActivityName();
-            StartActivityDialogFragment startActivityDialogFragment = StartActivityDialogFragment.create(formatter);
-            startActivityDialogFragment.setActivityName(name);
-            startActivityDialogFragment.setListener((activityName, startDate) -> {
-                viewModel.startNewActivity(activityName, startDate, newActivityNameIsTooShortListener);
-            });
-            startActivityDialogFragment.show(getChildFragmentManager(), START_ACTIVITY_DIALOG);
+            startActivityDialogDisplayer.display(name, getChildFragmentManager());
         };
         callback.setRightSwipe(icon, background, listener);
         return root;
