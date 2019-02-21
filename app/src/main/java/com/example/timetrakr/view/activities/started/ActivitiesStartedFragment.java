@@ -92,7 +92,7 @@ public class ActivitiesStartedFragment extends Fragment {
             AlertDialog dialog = new AlertDialog.Builder(getActivity())
                     .setMessage(warning)
                     .setPositiveButton(R.string.delete, (dlg, id) -> viewModel.deleteActivityStart(name, dateTime.toString()))
-                    .setNegativeButton(R.string.cancel, (dlg, id) -> adapter.notifyItemChanged(viewHolder.getAdapterPosition()))
+                    .setNegativeButton(R.string.cancel, (dlg, id) -> {})
                     .create();
             dialog.show();
             dialog.setOnDismissListener(dlg -> adapter.notifyItemChanged(viewHolder.getAdapterPosition()));
