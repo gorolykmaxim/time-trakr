@@ -131,6 +131,17 @@ public class StartActivityDialogFragmentTest {
     }
 
     @Test
+    public void createNewActivityWithEmptyName() {
+        View view = dialogFragment.onCreateView(inflater, container, null);
+        Assert.assertEquals(viewGroup, view);
+        viewStateInitialization();
+        // Just press start without doing anything.
+        View.OnClickListener onStartClick = onStartClickCaptor.getValue();
+        onStartClick.onClick(startButton);
+        Mockito.verify(listener).onStartActivity("", startDateCaptor.getValue());
+    }
+
+    @Test
     public void cancelDialog() {
         DialogInterface dialog = Mockito.mock(DialogInterface.class);
         DialogInterface.OnCancelListener onCancelListener = Mockito.mock(DialogInterface.OnCancelListener.class);

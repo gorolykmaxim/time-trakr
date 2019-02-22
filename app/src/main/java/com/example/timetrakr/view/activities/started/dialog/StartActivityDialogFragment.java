@@ -150,6 +150,7 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment {
          */
         public State(StartActivityDialogFragment dialogFragment) {
             this.dialogFragment = dialogFragment;
+            activityName = "";
         }
 
         /**
