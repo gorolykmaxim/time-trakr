@@ -26,15 +26,18 @@ public class ActivityDurationCalculatorTest {
     @Test
     public void calculateForThreeDifferentEvents() {
         List<ActivityStartEvent> activityStartEvents = new ArrayList<>();
-        LocalDateTime time = LocalDateTime.now().minusHours(7);
+        LocalDateTime time = LocalDateTime.now().minusHours(8);
         // First we hung out at the bar for 1 hour
         activityStartEvents.add(new ActivityStartEvent("Drinking beer", time));
         time = time.plusHours(1);
         // Second we skated for another 2 hours
         activityStartEvents.add(new ActivityStartEvent("Skateboarding", time));
         time = time.plusHours(2);
-        // And last but not least, we slept for 4 hours
+        // Third we slept for 4 hours
         activityStartEvents.add(new ActivityStartEvent("Sleeping", time));
+        time = time.plusHours(4);
+        // And last but not least - breakfast for 1 hour
+        activityStartEvents.add(new ActivityStartEvent("Breakfast", time));
         List<ActivityDuration> activityDurations = calculator.calculateDurationsFromEvents(activityStartEvents);
         // We expect returned collection of activity durations to preserve original activity order
         ActivityDuration activityDuration = activityDurations.get(0);
@@ -45,7 +48,10 @@ public class ActivityDurationCalculatorTest {
         Assert.assertEquals(Duration.ofHours(2), activityDuration.getDuration());
         activityDuration = activityDurations.get(2);
         Assert.assertEquals("Sleeping", activityDuration.getActivityName());
-        Assert.assertTrue(activityDuration.getDuration().compareTo(Duration.ofHours(4)) >= 0);
+        Assert.assertEquals(Duration.ofHours(4), activityDuration.getDuration());
+        activityDuration = activityDurations.get(3);
+        Assert.assertEquals("Breakfast", activityDuration.getActivityName());
+        Assert.assertTrue(activityDuration.getDuration().compareTo(Duration.ofHours(1)) >= 0);
     }
 
     @Test

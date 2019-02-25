@@ -5,10 +5,10 @@ import com.example.timetrakr.model.activity.events.ActivityStartEventFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Calculates durations for specified ordered sequence of activity start events.
@@ -45,7 +45,7 @@ public class ActivityDurationCalculator {
         // We will use this to calculate a name, that does not belong to any
         // of the user-registered activities.
         Set<String> activitiesFound = new HashSet<>();
-        Map<String, ActivityDuration> activityNameToActivityDurationMap = new TreeMap<>();
+        Map<String, ActivityDuration> activityNameToActivityDurationMap = new LinkedHashMap<>();
         for (int i = 0; i < activityStartEvents.size(); i++) {
             ActivityStartEvent event = activityStartEvents.get(i);
             String activityName = event.getActivityName();
