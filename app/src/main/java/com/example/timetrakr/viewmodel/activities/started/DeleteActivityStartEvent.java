@@ -7,9 +7,9 @@ import com.example.timetrakr.model.activity.events.ActivityStartEventRepository;
 import java.util.function.Supplier;
 
 /**
- * Operation of activity start event removal, that is performed in {@link android.os.AsyncTask}.
+ * Runnable, that erases activity start event with the specified name and start date.
  */
-public class DeleteActivityStartEvent implements Supplier<Void> {
+public class DeleteActivityStartEvent implements Runnable {
 
     private ActivityStartEventFactory factory;
     private ActivityStartEventRepository repository;
@@ -34,10 +34,8 @@ public class DeleteActivityStartEvent implements Supplier<Void> {
      * {@inheritDoc}
      */
     @Override
-    public Void get() {
+    public void run() {
         ActivityStartEvent activityStartEvent = factory.recreateFrom(activityName, activityStartDate);
         repository.delete(activityStartEvent);
-        return null;
     }
-
 }

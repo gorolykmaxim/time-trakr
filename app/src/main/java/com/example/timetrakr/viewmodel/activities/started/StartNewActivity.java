@@ -3,19 +3,24 @@ package com.example.timetrakr.viewmodel.activities.started;
 import com.example.timetrakr.model.activity.events.ActivityStartEvent;
 import com.example.timetrakr.model.activity.events.ActivityStartEventFactory;
 import com.example.timetrakr.model.activity.events.ActivityStartEventRepository;
+import com.example.timetrakr.model.activity.events.AnotherActivityAlreadyStartedException;
+import com.example.timetrakr.model.activity.events.NewActivityNameIsTooShortException;
 
 import java.time.LocalDateTime;
-import java.util.function.Supplier;
+
+import androidx.lifecycle.MutableLiveData;
 
 /**
- * Operation of activity start, that is performed in {@link android.os.AsyncTask}.
+ * Runnable, that starts new activity with the specified name at the specified date.
  */
-public class StartNewActivity implements Supplier<Exception> {
+public class StartNewActivity implements Runnable {
 
     private ActivityStartEventFactory factory;
     private ActivityStartEventRepository repository;
     private String activityName;
     private LocalDateTime startDate;
+    private MutableLiveData<NewActivityNameIsTooShortException> nameIsTooShortObservable;
+    private MutableLiveData<AnotherActivityAlreadyStartedException> activityAlreadyStartedObservable;
 
     /**
      * Construct activity start operation.
@@ -24,25 +29,33 @@ public class StartNewActivity implements Supplier<Exception> {
      * @param repository repository used to save newly created activity start event
      * @param activityName name of the started activity
      * @param startDate time when activity has been started
+     * @param nameIsTooShortObservable observable to notify about {@link NewActivityNameIsTooShortException} happened
+     * @param activityAlreadyStartedObservable observable to notify about {@link AnotherActivityAlreadyStartedException} happened
      */
-    public StartNewActivity(ActivityStartEventFactory factory, ActivityStartEventRepository repository, String activityName, LocalDateTime startDate) {
+    public StartNewActivity(ActivityStartEventFactory factory, ActivityStartEventRepository repository,
+                            String activityName, LocalDateTime startDate,
+                            MutableLiveData<NewActivityNameIsTooShortException> nameIsTooShortObservable,
+                            MutableLiveData<AnotherActivityAlreadyStartedException> activityAlreadyStartedObservable) {
         this.factory = factory;
         this.repository = repository;
         this.activityName = activityName;
         this.startDate = startDate;
+        this.nameIsTooShortObservable = nameIsTooShortObservable;
+        this.activityAlreadyStartedObservable = activityAlreadyStartedObservable;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Exception get() {
+    public void run() {
         try {
             ActivityStartEvent activityStartEvent = factory.createNew(activityName, startDate);
             repository.save(activityStartEvent);
-            return null;
-        } catch (Exception e) {
-            return e;
+        } catch (NewActivityNameIsTooShortException e) {
+            nameIsTooShortObservable.postValue(e);
+        } catch (AnotherActivityAlreadyStartedException e) {
+            activityAlreadyStartedObservable.postValue(e);
         }
     }
 }

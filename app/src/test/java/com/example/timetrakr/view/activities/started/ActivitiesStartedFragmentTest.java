@@ -38,6 +38,8 @@ public class ActivitiesStartedFragmentTest {
     public void setUp() throws Exception {
         viewModel = Mockito.mock(ActivitiesStartedViewModel.class);
         Mockito.when(viewModel.getActivityStartEvents()).thenReturn(Mockito.mock(LiveData.class));
+        Mockito.when(viewModel.getNameIsTooShortObservable()).thenReturn(Mockito.mock(LiveData.class));
+        Mockito.when(viewModel.getActivityAlreadyStartedObservable()).thenReturn(Mockito.mock(LiveData.class));
         provider = Mockito.mock(ViewModelProvider.class);
         Mockito.when(provider.get(ActivitiesStartedViewModel.class)).thenReturn(viewModel);
         resources = Mockito.mock(Resources.class);

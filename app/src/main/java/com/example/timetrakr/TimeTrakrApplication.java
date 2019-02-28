@@ -1,14 +1,17 @@
 package com.example.timetrakr;
 
 import android.app.Application;
-import androidx.room.Room;
 
-import com.example.timetrakr.model.activity.duration.ActivityDurationFactory;
 import com.example.timetrakr.model.activity.duration.ActivityDurationCalculator;
+import com.example.timetrakr.model.activity.duration.ActivityDurationFactory;
 import com.example.timetrakr.model.activity.events.ActivityStartEventFactory;
 import com.example.timetrakr.model.activity.events.ActivityStartEventRepository;
 import com.example.timetrakr.persistence.TimeTrakrDatabase;
-import com.example.timetrakr.viewmodel.common.AsyncTaskExecutor;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import androidx.room.Room;
 
 /**
  * Service registry of the time-trakr application.
@@ -19,7 +22,7 @@ public class TimeTrakrApplication extends Application {
     private ActivityStartEventFactory activityStartEventFactory;
     private ActivityDurationFactory activityDurationFactory;
     private ActivityDurationCalculator activityDurationCalculator;
-    private AsyncTaskExecutor executor;
+    private ExecutorService executorService;
 
     /**
      * {@inheritDoc}
@@ -35,7 +38,7 @@ public class TimeTrakrApplication extends Application {
         activityStartEventFactory = new ActivityStartEventFactory();
         activityDurationFactory = new ActivityDurationFactory();
         activityDurationCalculator = new ActivityDurationCalculator(activityDurationFactory, activityStartEventFactory);
-        executor = new AsyncTaskExecutor();
+        executorService = Executors.newSingleThreadExecutor();
     }
 
     /**
@@ -75,11 +78,11 @@ public class TimeTrakrApplication extends Application {
     }
 
     /**
-     * Return executor of {@link com.example.timetrakr.viewmodel.common.DelegatingAsyncTask} instances.
+     * Return executor service of the application.
      *
-     * @return executor of async tasks
+     * @return executor service
      */
-    public AsyncTaskExecutor getExecutor() {
-        return executor;
+    public ExecutorService getExecutorService() {
+        return executorService;
     }
 }
