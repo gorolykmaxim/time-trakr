@@ -1,15 +1,15 @@
 package com.example.timetrakr.persistence;
 
+import com.example.timetrakr.model.activity.events.ActivityStartEvent;
+
 import androidx.room.Database;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 
-import com.example.timetrakr.model.activity.events.ActivityStartEvent;
-
 /**
  * Database of the time-trakr app.
  */
-@Database(entities = {ActivityStartEvent.class}, version = 1)
+@Database(entities = {ActivityStartEvent.class}, version = 2)
 @TypeConverters(DateConverter.class)
 public abstract class TimeTrakrDatabase extends RoomDatabase {
 

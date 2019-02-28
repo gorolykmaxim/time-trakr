@@ -1,15 +1,15 @@
 package com.example.timetrakr.persistence;
 
+import com.example.timetrakr.model.activity.events.ActivityStartEvent;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
-
-import com.example.timetrakr.model.activity.events.ActivityStartEvent;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * DAO of {@link ActivityStartEvent} table.
@@ -39,6 +39,15 @@ public interface ActivityStartEventDao {
      */
     @Query("SELECT * FROM activity_start_event WHERE start_date > :time AND activity_name LIKE :name ORDER BY start_date ASC")
     List<ActivityStartEvent> getAllStartedBeforeWithNameLike(LocalDateTime time, String name);
+
+    /**
+     * Return activity start event, started at the specified date.
+     *
+     * @param time date-time, when the event has been started
+     * @return activity start event, that was created at the specified date
+     */
+    @Query("SELECT * FROM activity_start_event WHERE start_date = :time")
+    ActivityStartEvent getByStartDate(LocalDateTime time);
 
     /**
      * Insert specified activity start event.

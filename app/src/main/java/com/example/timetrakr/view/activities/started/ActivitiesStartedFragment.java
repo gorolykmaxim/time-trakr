@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.timetrakr.R;
+import com.example.timetrakr.model.activity.events.ActivityStartEvent;
+import com.example.timetrakr.model.activity.events.AnotherActivityAlreadyStartedException;
 import com.example.timetrakr.model.activity.events.NewActivityNameIsTooShortException;
 import com.example.timetrakr.view.activities.started.dialog.StartActivityDialogDisplayer;
 import com.example.timetrakr.view.activities.started.dialog.StartActivityDialogDisplayerFactory;
@@ -56,14 +58,22 @@ public class ActivitiesStartedFragment extends Fragment {
          */
         FloatingActionButton startActivityButton = root.findViewById(R.id.open_start_new_activity_dialog);
         // Prepare listener for case when created activity name is too short.
-        Consumer<NewActivityNameIsTooShortException> newActivityNameIsTooShortListener = e -> {
-            String message = String.format(getString(R.string.activity_name_too_short), e.getExpectedMinimalLength());
-            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+        Consumer<Exception> failedToStartActivityListener = e -> {
+            if (e instanceof NewActivityNameIsTooShortException) {
+                NewActivityNameIsTooShortException exception = (NewActivityNameIsTooShortException)e;
+                String message = String.format(getString(R.string.activity_name_too_short), exception.getExpectedMinimalLength());
+                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            } else if (e instanceof AnotherActivityAlreadyStartedException) {
+                AnotherActivityAlreadyStartedException exception = (AnotherActivityAlreadyStartedException)e;
+                ActivityStartEvent anotherActivity = exception.getAnotherActivity();
+                String message = String.format(getString(R.string.activity_already_started), anotherActivity.getActivityName(), anotherActivity.getStartDate().format(formatter));
+                Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            }
         };
         // Initialize start activity dialog displayer.
         StartActivityDialogDisplayerFactory dialogFactory = new StartActivityDialogDisplayerFactory(formatter);
         startActivityDialogDisplayer = new StartActivityDialogDisplayer(dialogFactory, "start_activity_dialog");
-        startActivityDialogDisplayer.setOnStartActivityListener((activityName, startDate) -> viewModel.startNewActivity(activityName, startDate, newActivityNameIsTooShortListener));
+        startActivityDialogDisplayer.setOnStartActivityListener((activityName, startDate) -> viewModel.startNewActivity(activityName, startDate, failedToStartActivityListener));
         // Open bottom sheet dialog to create new activity when clicking on a FAB.
         startActivityButton.setOnClickListener(v -> startActivityDialogDisplayer.display(getChildFragmentManager()));
         /*

@@ -1,16 +1,16 @@
 package com.example.timetrakr.model.activity.events;
 
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.annotation.NonNull;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
+
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
 
 /**
  * Event that signalises that a user has started a new activity.
  */
-@Entity(tableName = "activity_start_event", primaryKeys = {"activity_name", "start_date"})
+@Entity(tableName = "activity_start_event", primaryKeys = {"start_date"})
 public class ActivityStartEvent {
 
     @ColumnInfo(name = "activity_name")

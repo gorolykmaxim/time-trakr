@@ -7,6 +7,7 @@
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="activity_name_too_short">Activity name should be at least %d characters long.</string>
+    <string name="activity_already_started">\'%s\' has already been started at %s.</string>
     <string name="since">since %s</string>
     <string name="work_logs_for_today">Work logs for today</string>
     <string name="start">Start</string>

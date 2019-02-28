@@ -27,7 +27,10 @@ public class TimeTrakrApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        TimeTrakrDatabase database = Room.databaseBuilder(this, TimeTrakrDatabase.class, TimeTrakrDatabase.NAME).build();
+        TimeTrakrDatabase database = Room
+                .databaseBuilder(this, TimeTrakrDatabase.class, TimeTrakrDatabase.NAME)
+                .fallbackToDestructiveMigration()
+                .build();
         activityStartEventRepository = new ActivityStartEventRepository(database.getActivityStartEventDao());
         activityStartEventFactory = new ActivityStartEventFactory();
         activityDurationFactory = new ActivityDurationFactory();

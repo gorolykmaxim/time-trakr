@@ -3,7 +3,6 @@ package com.example.timetrakr.viewmodel.activities.started;
 import com.example.timetrakr.model.activity.events.ActivityStartEvent;
 import com.example.timetrakr.model.activity.events.ActivityStartEventFactory;
 import com.example.timetrakr.model.activity.events.ActivityStartEventRepository;
-import com.example.timetrakr.model.activity.events.NewActivityNameIsTooShortException;
 
 import java.time.LocalDateTime;
 import java.util.function.Supplier;
@@ -11,7 +10,7 @@ import java.util.function.Supplier;
 /**
  * Operation of activity start, that is performed in {@link android.os.AsyncTask}.
  */
-public class StartNewActivity implements Supplier<NewActivityNameIsTooShortException> {
+public class StartNewActivity implements Supplier<Exception> {
 
     private ActivityStartEventFactory factory;
     private ActivityStartEventRepository repository;
@@ -37,12 +36,12 @@ public class StartNewActivity implements Supplier<NewActivityNameIsTooShortExcep
      * {@inheritDoc}
      */
     @Override
-    public NewActivityNameIsTooShortException get() {
+    public Exception get() {
         try {
             ActivityStartEvent activityStartEvent = factory.createNew(activityName, startDate);
             repository.save(activityStartEvent);
             return null;
-        } catch (NewActivityNameIsTooShortException e) {
+        } catch (Exception e) {
             return e;
         }
     }

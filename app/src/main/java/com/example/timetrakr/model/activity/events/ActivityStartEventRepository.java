@@ -1,11 +1,13 @@
 package com.example.timetrakr.model.activity.events;
 
-import androidx.lifecycle.LiveData;
+import android.database.sqlite.SQLiteConstraintException;
 
 import com.example.timetrakr.persistence.ActivityStartEventDao;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import androidx.lifecycle.LiveData;
 
 /**
  * Repository of {@link ActivityStartEvent}
@@ -47,9 +49,16 @@ public class ActivityStartEventRepository {
      * Save specified activity start event in the repository.
      *
      * @param activityStartEvent activity start event to save
+     * @throws AnotherActivityAlreadyStartedException in case another activity has been already
+     * started at the time, specified activity is started
      */
-    public void save(ActivityStartEvent activityStartEvent) {
-        dao.insert(activityStartEvent);
+    public void save(ActivityStartEvent activityStartEvent) throws AnotherActivityAlreadyStartedException {
+        try {
+            dao.insert(activityStartEvent);
+        } catch (SQLiteConstraintException e) {
+            ActivityStartEvent alreadyStartedActivity = dao.getByStartDate(activityStartEvent.getStartDate());
+            throw new AnotherActivityAlreadyStartedException(alreadyStartedActivity);
+        }
     }
 
     /**

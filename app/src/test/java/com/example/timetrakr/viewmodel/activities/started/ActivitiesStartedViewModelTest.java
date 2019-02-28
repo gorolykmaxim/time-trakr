@@ -1,12 +1,10 @@
 package com.example.timetrakr.viewmodel.activities.started;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-
 import com.example.timetrakr.TimeTrakrApplication;
 import com.example.timetrakr.model.activity.events.ActivityStartEvent;
 import com.example.timetrakr.model.activity.events.ActivityStartEventFactory;
 import com.example.timetrakr.model.activity.events.ActivityStartEventRepository;
+import com.example.timetrakr.model.activity.events.AnotherActivityAlreadyStartedException;
 import com.example.timetrakr.model.activity.events.NewActivityNameIsTooShortException;
 import com.example.timetrakr.viewmodel.common.AsyncTaskExecutor;
 
@@ -22,6 +20,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 public class ActivitiesStartedViewModelTest {
 
@@ -63,7 +64,7 @@ public class ActivitiesStartedViewModelTest {
     }
 
     @Test
-    public void startNewActivity() throws NewActivityNameIsTooShortException {
+    public void startNewActivity() throws NewActivityNameIsTooShortException, AnotherActivityAlreadyStartedException {
         ActivityStartEvent event = Mockito.mock(ActivityStartEvent.class);
         Mockito.when(factory.createNew(fishing, startDate)).thenReturn(event);
         viewModel.startNewActivity(fishing, startDate, null);
@@ -78,12 +79,25 @@ public class ActivitiesStartedViewModelTest {
     @Test
     public void failedToStartNewActivityDueToShortName() throws NewActivityNameIsTooShortException {
         Mockito.when(factory.createNew(fishing, startDate)).thenThrow(Mockito.mock(NewActivityNameIsTooShortException.class));
-        Consumer<NewActivityNameIsTooShortException> listener = Mockito.mock(Consumer.class);
+        Consumer<Exception> listener = Mockito.mock(Consumer.class);
         viewModel.startNewActivity(fishing, startDate, listener);
         ArgumentCaptor<Supplier> captor = ArgumentCaptor.forClass(Supplier.class);
         Mockito.verify(executor).execute(captor.capture(), Matchers.eq(listener));
         Supplier supplier = captor.getValue();
         Assert.assertTrue(supplier.get() instanceof NewActivityNameIsTooShortException);
+    }
+
+    @Test
+    public void failedToStartNewActivityAtThatDate() throws NewActivityNameIsTooShortException, AnotherActivityAlreadyStartedException {
+        ActivityStartEvent event = Mockito.mock(ActivityStartEvent.class);
+        Mockito.when(factory.createNew(fishing, startDate)).thenReturn(event);
+        Mockito.doThrow(Mockito.mock(AnotherActivityAlreadyStartedException.class)).when(repository).save(event);
+        Consumer<Exception> listener = Mockito.mock(Consumer.class);
+        viewModel.startNewActivity(fishing, startDate, listener);
+        ArgumentCaptor<Supplier> captor = ArgumentCaptor.forClass(Supplier.class);
+        Mockito.verify(executor).execute(captor.capture(), Matchers.eq(listener));
+        Supplier supplier = captor.getValue();
+        Assert.assertTrue(supplier.get() instanceof AnotherActivityAlreadyStartedException);
     }
 
     @Test
