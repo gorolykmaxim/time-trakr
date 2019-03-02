@@ -58,7 +58,7 @@ public class EmptiableRecyclerViewTest {
         List<Object> objectList = Collections.singletonList(new Object());
         recyclerView.displayList(objectList);
         Mockito.verify(actualRecyclerView).setVisibility(View.VISIBLE);
-        Mockito.verify(noItemsPlaceHolderView).setVisibility(View.GONE);
+        Mockito.verify(noItemsPlaceHolderView).setVisibility(View.INVISIBLE);
         Mockito.verify(listAdapter).displayList(objectList);
     }
 
@@ -66,7 +66,7 @@ public class EmptiableRecyclerViewTest {
     public void displayEmptyList() {
         List<Object> objectList = Collections.emptyList();
         recyclerView.displayList(objectList);
-        Mockito.verify(actualRecyclerView).setVisibility(View.GONE);
+        Mockito.verify(actualRecyclerView).setVisibility(View.INVISIBLE);
         Mockito.verify(noItemsPlaceHolderView).setVisibility(View.VISIBLE);
         Mockito.verify(listAdapter).displayList(objectList);
     }

@@ -2,7 +2,7 @@ package com.example.timetrakr.view.common.recycler;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.timetrakr.R;
@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
  *
  * @param <T> entity type
  */
-public class EmptiableRecyclerView<T> extends LinearLayout {
+public class EmptiableRecyclerView<T> extends RelativeLayout {
 
     private RecyclerView recyclerView;
     private TextView noItemsPlaceHolderView;
@@ -86,8 +86,8 @@ public class EmptiableRecyclerView<T> extends LinearLayout {
         if (listAdapter == null) {
             throw new IllegalStateException(String.format("Specify %s using setListAdapter() before calling this method.", ListAdapter.class.getName()));
         }
-        noItemsPlaceHolderView.setVisibility(list.isEmpty() ? VISIBLE : GONE);
-        recyclerView.setVisibility(list.isEmpty() ? GONE : VISIBLE);
+        noItemsPlaceHolderView.setVisibility(list.isEmpty() ? VISIBLE : INVISIBLE);
+        recyclerView.setVisibility(list.isEmpty() ? INVISIBLE : VISIBLE);
         listAdapter.displayList(list);
     }
 
