@@ -15,6 +15,7 @@ import com.example.timetrakr.model.messages.common.CountIs;
 import com.example.timetrakr.model.messages.common.CountIsGreaterThan;
 import com.example.timetrakr.model.messages.common.Not;
 import com.example.timetrakr.model.messages.durations.ActivityDurationWithDurationShorterThanBuilder;
+import com.example.timetrakr.model.messages.durations.ActivityNameWithDurationLongerThanBuilder;
 import com.example.timetrakr.model.messages.durations.ActivityNameWithDurationShorterThanBuilder;
 import com.example.timetrakr.model.messages.durations.HasDurationLongerThan;
 import com.example.timetrakr.model.messages.durations.HasDurationShorterThan;
@@ -76,6 +77,11 @@ public class TimeTrakrApplication extends Application {
                 new Message<>(getString(R.string.duration_message_12), new ActivityNameWithDurationShorterThanBuilder(duration)),
                 new Message<>(getString(R.string.duration_message_13), new ActivityNameWithDurationShorterThanBuilder(duration)),
                 new Message<>(getString(R.string.duration_message_14), new ActivityNameWithDurationShorterThanBuilder(duration), new ActivityDurationWithDurationShorterThanBuilder(duration, formatter)));
+        duration = Duration.ofHours(4);
+        durationMessagesRepository.save(new And<>(new CountIs<>(1), new HasDurationLongerThan(duration)),
+                new Message<>(getString(R.string.duration_message_15), new ActivityNameWithDurationLongerThanBuilder(duration)),
+                new Message<>(getString(R.string.duration_message_16), new ActivityNameWithDurationLongerThanBuilder(duration)),
+                new Message<>(getString(R.string.duration_message_17), new ActivityNameWithDurationLongerThanBuilder(duration)));
     }
 
     /**

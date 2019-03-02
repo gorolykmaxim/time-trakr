@@ -27,4 +27,7 @@
     <string name="duration_message_12">Did you forget about “%s”?</string>
     <string name="duration_message_13">I think you should work more on that “%s”.</string>
     <string name="duration_message_14">”%s” for %s? Am i the only one embarrassed here to log this in the actual time tracking system?</string>
+    <string name="duration_message_15">Take a break, pal. “%s” won’t go anywhere. Probably.</string>
+    <string name="duration_message_16">Stand up, go outside and take a pause. “%s” is tough, but you can beat it. Just need a different angle.</string>
+    <string name="duration_message_17">You should’ve split that “%s” into sub-tasks, you dummy.</string>
 </resources>
