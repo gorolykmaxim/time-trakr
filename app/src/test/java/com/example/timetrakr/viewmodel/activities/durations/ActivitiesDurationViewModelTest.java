@@ -6,6 +6,7 @@ import com.example.timetrakr.model.activity.duration.ActivityDurationCalculator;
 import com.example.timetrakr.model.activity.duration.ActivityDurationSelection;
 import com.example.timetrakr.model.activity.events.ActivityStartEvent;
 import com.example.timetrakr.model.activity.events.ActivityStartEventRepository;
+import com.example.timetrakr.model.messages.MessageRepository;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -37,6 +38,8 @@ public class ActivitiesDurationViewModelTest {
     private ActivityDuration activityDuration;
     private ActivitiesDurationViewModel viewModel;
     private ActivityDurationSelection activityDurationSelection;
+    private MessageRepository<List<ActivityDuration>> messageRepository;
+    private String message;
 
     @Before
     public void setUp() throws Exception {
@@ -44,6 +47,9 @@ public class ActivitiesDurationViewModelTest {
         activityDuration = Mockito.mock(ActivityDuration.class);
         expectedActivityDurations = Collections.singletonList(activityDuration);
         durationCalculator = Mockito.mock(ActivityDurationCalculator.class);
+        message = "Hello.";
+        messageRepository = Mockito.mock(MessageRepository.class);
+        Mockito.when(messageRepository.findOneThatAppliesTo(expectedActivityDurations)).thenReturn(message);
         Mockito.when(durationCalculator.calculateDurationsFromEvents(activityStartEvents)).thenReturn(expectedActivityDurations);
         repository = Mockito.mock(ActivityStartEventRepository.class);
         repositoryObservable = new MutableLiveData<>();
@@ -51,6 +57,7 @@ public class ActivitiesDurationViewModelTest {
         application = Mockito.mock(TimeTrakrApplication.class);
         Mockito.when(application.getActivityDurationCalculator()).thenReturn(durationCalculator);
         Mockito.when(application.getActivityStartEventRepository()).thenReturn(repository);
+        Mockito.when(application.getDurationMessagesRepository()).thenReturn(messageRepository);
         viewModel = new ActivitiesDurationViewModel(application);
         activityDurationSelection = Mockito.mock(ActivityDurationSelection.class);
         viewModel.setActivityDurationSelection(activityDurationSelection);
@@ -59,34 +66,48 @@ public class ActivitiesDurationViewModelTest {
     @Test
     public void receiveActivitiesFromRepositoryObservable() {
         LiveData<List<ActivityDuration>> activityDurations = viewModel.getActivityDurations();
+        LiveData<String> observableMessage = viewModel.getObservableMessage();
         // Need to activate LiveData or else it won't receive any notifications from a LiveData
         // it listens to.
         activityDurations.observeForever(list -> {});
+        observableMessage.observeForever(message -> {});
         repositoryObservable.setValue(activityStartEvents);
         Assert.assertEquals(expectedActivityDurations, activityDurations.getValue());
+        Assert.assertEquals(message, observableMessage.getValue());
     }
 
     @Test
     public void inCaseOfNullDurationsShouldNotChange() {
         LiveData<List<ActivityDuration>> activityDurations = viewModel.getActivityDurations();
+        LiveData<String> observableMessage = viewModel.getObservableMessage();
         repositoryObservable.setValue(activityStartEvents);
         activityDurations.observeForever(list -> {});
+        observableMessage.observeForever(message -> {});
         Assert.assertEquals(expectedActivityDurations, activityDurations.getValue());
+        Assert.assertEquals(message, observableMessage.getValue());
         repositoryObservable.setValue(null);
         Assert.assertEquals(expectedActivityDurations, activityDurations.getValue());
+        Mockito.verify(messageRepository, Mockito.never()).findOneThatAppliesTo(null);
+        Assert.assertEquals(message, observableMessage.getValue());
     }
 
     @Test
     public void recalculateActivityDurations() {
+        String emptyListMessage = "The list is empty";
         Mockito.when(durationCalculator.calculateDurationsFromEvents(activityStartEvents)).thenReturn(Collections.emptyList());
+        Mockito.when(messageRepository.findOneThatAppliesTo(Collections.emptyList())).thenReturn(emptyListMessage);
         LiveData<List<ActivityDuration>> activityDurations = viewModel.getActivityDurations();
+        LiveData<String> observableMessage = viewModel.getObservableMessage();
         repositoryObservable.setValue(activityStartEvents);
         activityDurations.observeForever(list -> {});
+        observableMessage.observeForever(message -> {});
         Assert.assertEquals(Collections.emptyList(), activityDurations.getValue());
+        Assert.assertEquals(emptyListMessage, observableMessage.getValue());
         // Now duration calculator will behave differently receiving the same set of activity start events.
         Mockito.when(durationCalculator.calculateDurationsFromEvents(activityStartEvents)).thenReturn(expectedActivityDurations);
         viewModel.recalculateActivityDurations();
         Assert.assertEquals(expectedActivityDurations, activityDurations.getValue());
+        Assert.assertEquals(message, observableMessage.getValue());
     }
 
     @Test

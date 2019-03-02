@@ -1,22 +1,23 @@
 package com.example.timetrakr.view.activities.durations;
 
-import androidx.lifecycle.ViewModelProviders;
-
 import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.timetrakr.R;
 import com.example.timetrakr.common.DurationFormatter;
 import com.example.timetrakr.view.common.ClosableTextView;
 import com.example.timetrakr.viewmodel.activities.durations.ActivitiesDurationViewModel;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Displays overall durations of today's user's activities.
@@ -32,6 +33,7 @@ public class ActivitiesDurationsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup root = (ViewGroup)inflater.inflate(R.layout.activities_durations_view, container, false);
+        TextView titleMessage = root.findViewById(R.id.title_message);
         ClosableTextView totalDurationView = root.findViewById(R.id.total_duration);
         RecyclerView recyclerView = root.findViewById(R.id.activities_durations_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -68,6 +70,7 @@ public class ActivitiesDurationsFragment extends Fragment {
                 totalDurationView.show();
             }
         });
+        viewModel.getObservableMessage().observe(this, titleMessage::setText);
         totalDurationView.setOnCloseListener(viewModel::clearSelectedActivityDurations);
         return root;
     }

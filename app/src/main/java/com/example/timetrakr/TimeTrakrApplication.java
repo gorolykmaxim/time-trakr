@@ -2,12 +2,17 @@ package com.example.timetrakr;
 
 import android.app.Application;
 
+import com.example.timetrakr.model.activity.duration.ActivityDuration;
 import com.example.timetrakr.model.activity.duration.ActivityDurationCalculator;
 import com.example.timetrakr.model.activity.duration.ActivityDurationFactory;
 import com.example.timetrakr.model.activity.events.ActivityStartEventFactory;
 import com.example.timetrakr.model.activity.events.ActivityStartEventRepository;
+import com.example.timetrakr.model.messages.Message;
+import com.example.timetrakr.model.messages.MessageRepository;
+import com.example.timetrakr.model.messages.common.CountIs;
 import com.example.timetrakr.persistence.TimeTrakrDatabase;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,6 +28,7 @@ public class TimeTrakrApplication extends Application {
     private ActivityDurationFactory activityDurationFactory;
     private ActivityDurationCalculator activityDurationCalculator;
     private ExecutorService executorService;
+    private MessageRepository<List<ActivityDuration>> durationMessagesRepository;
 
     /**
      * {@inheritDoc}
@@ -39,6 +45,12 @@ public class TimeTrakrApplication extends Application {
         activityDurationFactory = new ActivityDurationFactory();
         activityDurationCalculator = new ActivityDurationCalculator(activityDurationFactory, activityStartEventFactory);
         executorService = Executors.newSingleThreadExecutor();
+        // Initialize repository of activity durations related messages.
+        durationMessagesRepository = new MessageRepository<>();
+        durationMessagesRepository.save(new CountIs<>(0),
+                new Message<>(getString(R.string.duration_message_1)),
+                new Message<>(getString(R.string.duration_message_2)),
+                new Message<>(getString(R.string.duration_message_3)));
     }
 
     /**
@@ -84,5 +96,14 @@ public class TimeTrakrApplication extends Application {
      */
     public ExecutorService getExecutorService() {
         return executorService;
+    }
+
+    /**
+     * Return repository of messages to display in the activity durations view.
+     *
+     * @return repository of activity durations related messages
+     */
+    public MessageRepository<List<ActivityDuration>> getDurationMessagesRepository() {
+        return durationMessagesRepository;
     }
 }

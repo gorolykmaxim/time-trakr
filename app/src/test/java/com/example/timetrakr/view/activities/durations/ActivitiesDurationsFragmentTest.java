@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.timetrakr.R;
 import com.example.timetrakr.view.common.ClosableTextView;
@@ -38,6 +39,7 @@ public class ActivitiesDurationsFragmentTest {
         Mockito.when(viewModel.getActivityDurations()).thenReturn(Mockito.mock(LiveData.class));
         Mockito.when(viewModel.getObservableSelectedActivities()).thenReturn(Mockito.mock(LiveData.class));
         Mockito.when(viewModel.getObservableTotalDuration()).thenReturn(Mockito.mock(LiveData.class));
+        Mockito.when(viewModel.getObservableMessage()).thenReturn(Mockito.mock(LiveData.class));
         provider = Mockito.mock(ViewModelProvider.class);
         Mockito.when(provider.get(ActivitiesDurationViewModel.class)).thenReturn(viewModel);
     }
@@ -58,6 +60,8 @@ public class ActivitiesDurationsFragmentTest {
         Mockito.when(root.findViewById(R.id.activities_durations_recycler_view)).thenReturn(recyclerView);
         ClosableTextView totalDurationView = Mockito.mock(ClosableTextView.class);
         Mockito.when(root.findViewById(R.id.total_duration)).thenReturn(totalDurationView);
+        TextView titleMessage = Mockito.mock(TextView.class);
+        Mockito.when(root.findViewById(R.id.title_message)).thenReturn(titleMessage);
         Mockito.when(inflater.inflate(R.layout.activities_durations_view, container, false)).thenReturn(root);
         // onCreateView() should properly initialize everything.
         View view = fragment.onCreateView(inflater, container, null);
@@ -68,6 +72,7 @@ public class ActivitiesDurationsFragmentTest {
         Mockito.verify(viewModel.getActivityDurations()).observe(Mockito.eq(fragment), Mockito.notNull(Observer.class));
         Mockito.verify(viewModel.getObservableSelectedActivities()).observe(Mockito.eq(fragment), Mockito.notNull(Observer.class));
         Mockito.verify(viewModel.getObservableTotalDuration()).observe(Mockito.eq(fragment), Mockito.notNull(Observer.class));
+        Mockito.verify(viewModel.getObservableMessage()).observe(Mockito.eq(fragment), Mockito.notNull(Observer.class));
         // Each time fragment is re-drawn, it's view model should recalculate activity durations,
         // so it always fresh values.
         fragment.onStart();

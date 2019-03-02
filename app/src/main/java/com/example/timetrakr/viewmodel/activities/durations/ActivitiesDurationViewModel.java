@@ -1,11 +1,6 @@
 package com.example.timetrakr.viewmodel.activities.durations;
 
 import android.app.Application;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.example.timetrakr.TimeTrakrApplication;
 import com.example.timetrakr.model.activity.duration.ActivityDuration;
@@ -13,10 +8,17 @@ import com.example.timetrakr.model.activity.duration.ActivityDurationCalculator;
 import com.example.timetrakr.model.activity.duration.ActivityDurationSelection;
 import com.example.timetrakr.model.activity.events.ActivityStartEvent;
 import com.example.timetrakr.model.activity.events.ActivityStartEventRepository;
+import com.example.timetrakr.model.messages.MessageRepository;
 
 import java.time.Duration;
 import java.util.List;
 import java.util.Set;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 
 /**
  * View model of the view that shows durations of activities, done today.
@@ -27,6 +29,8 @@ public class ActivitiesDurationViewModel extends AndroidViewModel {
     private LiveData<List<ActivityStartEvent>> activityStartEvents;
     private ActivityDurationCalculator durationCalculator;
     private ActivityDurationSelection activityDurationSelection;
+    private MediatorLiveData<String> observableMessage;
+    private MessageRepository<List<ActivityDuration>> messageRepository;
 
     /**
      * Construct the view model.
@@ -38,10 +42,13 @@ public class ActivitiesDurationViewModel extends AndroidViewModel {
         TimeTrakrApplication timeTrakrApplication = (TimeTrakrApplication)application;
         ActivityStartEventRepository repository = timeTrakrApplication.getActivityStartEventRepository();
         durationCalculator = timeTrakrApplication.getActivityDurationCalculator();
+        messageRepository = timeTrakrApplication.getDurationMessagesRepository();
         activityStartEvents = repository.getObservableForAllForToday();
         observableActivityDurations = new MediatorLiveData<>();
         observableActivityDurations.addSource(activityStartEvents, this::triggerActivityDurationCalculationFor);
         activityDurationSelection = new ActivityDurationSelection(observableActivityDurations);
+        observableMessage = new MediatorLiveData<>();
+        observableMessage.addSource(observableActivityDurations, this::triggerMessageLookupFor);
     }
 
     /**
@@ -110,6 +117,15 @@ public class ActivitiesDurationViewModel extends AndroidViewModel {
     }
 
     /**
+     * Get observable of a message to display in the title of the durations fragment.
+     *
+     * @return observable of a message to display
+     */
+    public LiveData<String> getObservableMessage() {
+        return observableMessage;
+    }
+
+    /**
      * Force recalculation of durations of today's activities.
      */
     public void recalculateActivityDurations() {
@@ -126,6 +142,19 @@ public class ActivitiesDurationViewModel extends AndroidViewModel {
     private void triggerActivityDurationCalculationFor(@Nullable List<ActivityStartEvent> activityStartEvents) {
         if (activityStartEvents != null) {
             observableActivityDurations.setValue(durationCalculator.calculateDurationsFromEvents(activityStartEvents));
+        }
+    }
+
+    /**
+     * Find a message in the message repository, that matches the specified list of activity
+     * durations.
+     *
+     * @param activityDurations list of activity durations to find a message for.
+     *                          In case null is passed - the call will be ignored.
+     */
+    private void triggerMessageLookupFor(@Nullable List<ActivityDuration> activityDurations) {
+        if (activityDurations != null) {
+            observableMessage.setValue(messageRepository.findOneThatAppliesTo(activityDurations));
         }
     }
 
