@@ -31,4 +31,7 @@
     <string name="duration_message_16">Stand up, go outside and take a pause. “%s” is tough, but you can beat it. Just need a different angle.</string>
     <string name="duration_message_17">You should’ve split that “%s” into sub-tasks, you dummy.</string>
     <string name="duration_message_18">What a roller coaster you have today.</string>
+    <string name="duration_message_19">Well it’s time to go home.</string>
+    <string name="duration_message_20">It’s already 8h. Pack up - we are leaving.</string>
+    <string name="duration_message_21">Why do i always have to wait for you? It’s 8h already, let’s go!</string>
 </resources>

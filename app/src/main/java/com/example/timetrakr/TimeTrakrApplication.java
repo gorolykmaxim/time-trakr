@@ -19,6 +19,7 @@ import com.example.timetrakr.model.messages.durations.ActivityNameWithDurationLo
 import com.example.timetrakr.model.messages.durations.ActivityNameWithDurationShorterThanBuilder;
 import com.example.timetrakr.model.messages.durations.HasDurationLongerThan;
 import com.example.timetrakr.model.messages.durations.HasDurationShorterThan;
+import com.example.timetrakr.model.messages.durations.TotalDurationIsLongerThan;
 import com.example.timetrakr.persistence.TimeTrakrDatabase;
 
 import java.time.Duration;
@@ -83,6 +84,10 @@ public class TimeTrakrApplication extends Application {
                 new Message<>(getString(R.string.duration_message_16), new ActivityNameWithDurationLongerThanBuilder(duration)),
                 new Message<>(getString(R.string.duration_message_17), new ActivityNameWithDurationLongerThanBuilder(duration)));
         durationMessagesRepository.save(new CountIsGreaterThan<>(4), new Message<>(getString(R.string.duration_message_18)));
+        durationMessagesRepository.save(new TotalDurationIsLongerThan(Duration.ofHours(8)),
+                new Message<>(getString(R.string.duration_message_19)),
+                new Message<>(getString(R.string.duration_message_20)),
+                new Message<>(getString(R.string.duration_message_21)));
     }
 
     /**
