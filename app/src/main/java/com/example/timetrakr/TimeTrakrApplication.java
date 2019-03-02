@@ -117,6 +117,8 @@ public class TimeTrakrApplication extends Application {
                 new Message<>(getString(R.string.activity_start_message7), new TimeOfTheDayBuilder(dateTimeFormatter)));
         activityMessagesRepository.save(new And<>(new IsTimeLaterThan(LocalTime.of(0, 0)), new IsTimeEarlierThan(LocalTime.of(7, 0))),
                 new Message<>(getString(R.string.activity_start_message8)));
+        activityMessagesRepository.save(new And<>(new Not<>(new IsWeekendDay()), new IsTimeLaterThan(LocalTime.of(10, 0))),
+                new Message<>(getString(R.string.activity_start_message9)));
     }
 
     /**
