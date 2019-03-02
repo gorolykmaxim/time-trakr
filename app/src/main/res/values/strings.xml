@@ -34,4 +34,7 @@
     <string name="duration_message_19">Well it’s time to go home.</string>
     <string name="duration_message_20">It’s already 8h. Pack up - we are leaving.</string>
     <string name="duration_message_21">Why do i always have to wait for you? It’s 8h already, let’s go!</string>
+    <string name="duration_message_22">Are you crazy or what? It has been 9h hours or something!</string>
+    <string name="duration_message_23">Alright! If you are that stupid to stay at work for a freaking 9 hours, that’s fine! Let ME go home. I’m literally dying!</string>
+    <string name="duration_message_24">It has been 9 hours! HELP! Let me go. I wan’t to sleep.</string>
 </resources>
