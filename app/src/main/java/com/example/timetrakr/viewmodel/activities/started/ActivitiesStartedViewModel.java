@@ -8,14 +8,17 @@ import com.example.timetrakr.model.activity.events.ActivityStartEventFactory;
 import com.example.timetrakr.model.activity.events.ActivityStartEventRepository;
 import com.example.timetrakr.model.activity.events.AnotherActivityAlreadyStartedException;
 import com.example.timetrakr.model.activity.events.NewActivityNameIsTooShortException;
+import com.example.timetrakr.model.messages.MessageRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 
 /**
@@ -27,8 +30,10 @@ public class ActivitiesStartedViewModel extends AndroidViewModel {
     private LiveData<List<ActivityStartEvent>> activityStartEvents;
     private MutableLiveData<NewActivityNameIsTooShortException> nameIsTooShortObservable;
     private MutableLiveData<AnotherActivityAlreadyStartedException> activityAlreadyStartedObservable;
+    private MediatorLiveData<String> observableMessage;
     private ActivityStartEventFactory factory;
     private ActivityStartEventRepository repository;
+    private MessageRepository<LocalDateTime> messageRepository;
     private ExecutorService executorService;
 
     /**
@@ -41,10 +46,13 @@ public class ActivitiesStartedViewModel extends AndroidViewModel {
         TimeTrakrApplication timeTrakrApplication = (TimeTrakrApplication)application;
         repository = timeTrakrApplication.getActivityStartEventRepository();
         executorService = timeTrakrApplication.getExecutorService();
+        messageRepository = timeTrakrApplication.getActivityMessagesRepository();
         activityStartEvents = repository.getObservableForAllForToday();
         factory = timeTrakrApplication.getActivityStartEventFactory();
         nameIsTooShortObservable = new MutableLiveData<>();
         activityAlreadyStartedObservable = new MutableLiveData<>();
+        observableMessage = new MediatorLiveData<>();
+        observableMessage.addSource(activityStartEvents, this::triggerMessageLookupFor);
     }
 
     /**
@@ -87,6 +95,16 @@ public class ActivitiesStartedViewModel extends AndroidViewModel {
     }
 
     /**
+     * Get observable of a message to display in the activity start events fragment, in when
+     * there are no activity start events to display.
+     *
+     * @return observable of a message to display
+     */
+    public LiveData<String> getObservableMessage() {
+        return observableMessage;
+    }
+
+    /**
      * Create new activity start event.
      *
      * @param activityName name of the activity user started doing
@@ -106,6 +124,18 @@ public class ActivitiesStartedViewModel extends AndroidViewModel {
      */
     public void deleteActivityStart(String activityName, String activityStartDate) {
         executorService.execute(new DeleteActivityStartEvent(factory, repository, activityName, activityStartDate));
+    }
+
+    /**
+     * Find a message in the message repository if specified list is empty.
+     *
+     * @param activityStartEvents list of activity start events to find a message for.
+     *                            In case null or a non-empty is passed - the call will be ignored.
+     */
+    private void triggerMessageLookupFor(@Nullable List<ActivityStartEvent> activityStartEvents) {
+        if (activityStartEvents != null && activityStartEvents.isEmpty()) {
+            observableMessage.setValue(messageRepository.findOneThatAppliesTo(LocalDateTime.now()));
+        }
     }
 
 }

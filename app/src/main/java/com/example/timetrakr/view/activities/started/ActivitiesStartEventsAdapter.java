@@ -1,22 +1,23 @@
 package com.example.timetrakr.view.activities.started;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.example.timetrakr.R;
 import com.example.timetrakr.model.activity.events.ActivityStartEvent;
+import com.example.timetrakr.view.common.recycler.ListAdapter;
 import com.example.timetrakr.view.common.recycler.RecyclerViewAdapterStrategy;
 import com.example.timetrakr.view.common.recycler.SingleDifferenceFindingStrategy;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+
 /**
  * Adapter used to display information about activity start events in the recycler view.
  */
-public class ActivitiesStartEventsAdapter extends RecyclerView.Adapter<ActivityStartViewHolder> {
+public class ActivitiesStartEventsAdapter extends ListAdapter<ActivityStartEvent, ActivityStartViewHolder> {
 
     private List<ActivityStartEvent> activityStartEvents;
     private RecyclerViewAdapterStrategy strategy;
@@ -44,11 +45,10 @@ public class ActivitiesStartEventsAdapter extends RecyclerView.Adapter<ActivityS
     }
 
     /**
-     * Update data set of the adapter with specified list of activity start events.
-     *
-     * @param activityStartEvents list of activity start events to display in the recycler view
+     * {@inheritDoc}
      */
-    public void updateActivityStartEvents(List<ActivityStartEvent> activityStartEvents) {
+    @Override
+    public void displayList(List<ActivityStartEvent> activityStartEvents) {
         List<ActivityStartEvent> oldActivityStartEvents = this.activityStartEvents;
         this.activityStartEvents = activityStartEvents;
         strategy.notifyDataSetChanged(this, oldActivityStartEvents, activityStartEvents);

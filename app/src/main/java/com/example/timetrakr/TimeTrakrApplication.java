@@ -11,6 +11,7 @@ import com.example.timetrakr.model.activity.events.ActivityStartEventRepository;
 import com.example.timetrakr.model.messages.Message;
 import com.example.timetrakr.model.messages.MessageRepository;
 import com.example.timetrakr.model.messages.common.And;
+import com.example.timetrakr.model.messages.common.Any;
 import com.example.timetrakr.model.messages.common.CountIs;
 import com.example.timetrakr.model.messages.common.CountIsGreaterThan;
 import com.example.timetrakr.model.messages.common.Not;
@@ -23,6 +24,7 @@ import com.example.timetrakr.model.messages.durations.TotalDurationIsLongerThan;
 import com.example.timetrakr.persistence.TimeTrakrDatabase;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,6 +42,7 @@ public class TimeTrakrApplication extends Application {
     private ActivityDurationCalculator activityDurationCalculator;
     private ExecutorService executorService;
     private MessageRepository<List<ActivityDuration>> durationMessagesRepository;
+    private MessageRepository<LocalDateTime> activityMessagesRepository;
 
     /**
      * {@inheritDoc}
@@ -92,6 +95,11 @@ public class TimeTrakrApplication extends Application {
                 new Message<>(getString(R.string.duration_message_22)),
                 new Message<>(getString(R.string.duration_message_23)),
                 new Message<>(getString(R.string.duration_message_24)));
+        // Initialize repository of activity start events related messages.
+        activityMessagesRepository = new MessageRepository<>();
+        activityMessagesRepository.save(new Any<>(),
+                new Message<>(getString(R.string.activity_start_message1)),
+                new Message<>(getString(R.string.activity_start_message2)));
     }
 
     /**
@@ -147,4 +155,14 @@ public class TimeTrakrApplication extends Application {
     public MessageRepository<List<ActivityDuration>> getDurationMessagesRepository() {
         return durationMessagesRepository;
     }
+
+    /**
+     * Return repository of messages to display in the activity start events view.
+     *
+     * @return repository of activity start events related messages
+     */
+    public MessageRepository<LocalDateTime> getActivityMessagesRepository() {
+        return activityMessagesRepository;
+    }
+
 }

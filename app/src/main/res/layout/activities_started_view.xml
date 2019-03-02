@@ -6,10 +6,10 @@
     style="@style/WindowPadding"
     android:background="@color/colorPrimaryDark">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/activities_started_recycler_view"
+    <com.example.timetrakr.view.common.recycler.EmptiableRecyclerView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:id="@+id/activities_started_recycler_view"/>
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/open_start_new_activity_dialog"
         android:layout_width="wrap_content"

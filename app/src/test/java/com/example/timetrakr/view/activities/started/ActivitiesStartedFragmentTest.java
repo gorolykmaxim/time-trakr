@@ -6,6 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.timetrakr.R;
+import com.example.timetrakr.model.activity.events.ActivityStartEvent;
+import com.example.timetrakr.view.common.recycler.EmptiableRecyclerView;
+import com.example.timetrakr.view.common.recycler.ListAdapter;
 import com.example.timetrakr.viewmodel.activities.started.ActivitiesStartedViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -40,6 +43,7 @@ public class ActivitiesStartedFragmentTest {
         Mockito.when(viewModel.getActivityStartEvents()).thenReturn(Mockito.mock(LiveData.class));
         Mockito.when(viewModel.getNameIsTooShortObservable()).thenReturn(Mockito.mock(LiveData.class));
         Mockito.when(viewModel.getActivityAlreadyStartedObservable()).thenReturn(Mockito.mock(LiveData.class));
+        Mockito.when(viewModel.getObservableMessage()).thenReturn(Mockito.mock(LiveData.class));
         provider = Mockito.mock(ViewModelProvider.class);
         Mockito.when(provider.get(ActivitiesStartedViewModel.class)).thenReturn(viewModel);
         resources = Mockito.mock(Resources.class);
@@ -57,14 +61,18 @@ public class ActivitiesStartedFragmentTest {
         ViewGroup root = Mockito.mock(ViewGroup.class);
         FloatingActionButton startActivityButton = Mockito.mock(FloatingActionButton.class);
         Mockito.when(root.findViewById(R.id.open_start_new_activity_dialog)).thenReturn(startActivityButton);
-        RecyclerView recyclerView = Mockito.mock(RecyclerView.class);
+        EmptiableRecyclerView<ActivityStartEvent> recyclerView = Mockito.mock(EmptiableRecyclerView.class);
         Mockito.when(root.findViewById(R.id.activities_started_recycler_view)).thenReturn(recyclerView);
         Mockito.when(inflater.inflate(R.layout.activities_started_view, container, false)).thenReturn(root);
         View view = fragment.onCreateView(inflater, container, null);
         Assert.assertEquals(root, view);
         Mockito.verify(startActivityButton).setOnClickListener(Mockito.notNull(View.OnClickListener.class));
         Mockito.verify(recyclerView).setLayoutManager(Mockito.notNull(RecyclerView.LayoutManager.class));
-        Mockito.verify(recyclerView).setAdapter(Mockito.notNull(RecyclerView.Adapter.class));
+        Mockito.verify(recyclerView).setListAdapter(Mockito.notNull(ListAdapter.class));
+        Mockito.verify(recyclerView).setItemTouchHelper(Mockito.notNull(ItemTouchHelper.class));
         Mockito.verify(viewModel.getActivityStartEvents()).observe(Mockito.eq(fragment), Mockito.notNull(Observer.class));
+        Mockito.verify(viewModel.getObservableMessage()).observe(Mockito.eq(fragment), Mockito.notNull(Observer.class));
+        Mockito.verify(viewModel.getActivityAlreadyStartedObservable()).observe(Mockito.eq(fragment), Mockito.notNull(Observer.class));
+        Mockito.verify(viewModel.getNameIsTooShortObservable()).observe(Mockito.eq(fragment), Mockito.notNull(Observer.class));
     }
 }

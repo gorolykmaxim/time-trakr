@@ -78,14 +78,14 @@ public class ActivitiesStartEventsAdapterTest {
         ActivityStartEvent event2 = new ActivityStartEvent("Eating", LocalDateTime.now().minusHours(2));
         ActivityStartEvent event3 = new ActivityStartEvent("Playing games", LocalDateTime.now());
         List<ActivityStartEvent> events = Arrays.asList(event1, event2, event3);
-        adapter.updateActivityStartEvents(events);
+        adapter.displayList(events);
         Mockito.verify(strategy).notifyDataSetChanged(adapter, Collections.emptyList(), events);
         Assert.assertEquals(events.size(), adapter.getItemCount());
         onBindViewHolder(adapter, viewHolder, events);
         Mockito.reset(viewHolder);
         // Update adapter's data set with previously used data set but 1 item removed.
         List<ActivityStartEvent> updatedEvents = Arrays.asList(event1, event3);
-        adapter.updateActivityStartEvents(updatedEvents);
+        adapter.displayList(updatedEvents);
         Mockito.verify(strategy).notifyDataSetChanged(adapter, events, updatedEvents);
         Assert.assertEquals(updatedEvents.size(), adapter.getItemCount());
         onBindViewHolder(adapter, viewHolder, updatedEvents);

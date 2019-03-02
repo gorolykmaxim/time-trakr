@@ -6,6 +6,7 @@ import com.example.timetrakr.model.activity.events.ActivityStartEventFactory;
 import com.example.timetrakr.model.activity.events.ActivityStartEventRepository;
 import com.example.timetrakr.model.activity.events.AnotherActivityAlreadyStartedException;
 import com.example.timetrakr.model.activity.events.NewActivityNameIsTooShortException;
+import com.example.timetrakr.model.messages.MessageRepository;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,7 +37,8 @@ public class ActivitiesStartedViewModelTest {
     private ActivityStartEventRepository repository;
     private ActivityStartEventFactory factory;
     private ExecutorService executor;
-    private LiveData<List<ActivityStartEvent>> activityStartEvents;
+    private MessageRepository<LocalDateTime> messageRepository;
+    private MutableLiveData<List<ActivityStartEvent>> activityStartEvents;
     private Observer<NewActivityNameIsTooShortException> nameIsTooShortObserver;
     private Observer<AnotherActivityAlreadyStartedException> activityAlreadyStartedObserver;
 
@@ -49,12 +51,14 @@ public class ActivitiesStartedViewModelTest {
         Mockito.when(repository.getObservableForAllForToday()).thenReturn(activityStartEvents);
         factory = Mockito.mock(ActivityStartEventFactory.class);
         executor = Mockito.mock(ExecutorService.class);
+        messageRepository = Mockito.mock(MessageRepository.class);
         nameIsTooShortObserver = Mockito.mock(Observer.class);
         activityAlreadyStartedObserver = Mockito.mock(Observer.class);
         TimeTrakrApplication application = Mockito.mock(TimeTrakrApplication.class);
         Mockito.when(application.getActivityStartEventRepository()).thenReturn(repository);
         Mockito.when(application.getActivityStartEventFactory()).thenReturn(factory);
         Mockito.when(application.getExecutorService()).thenReturn(executor);
+        Mockito.when(application.getActivityMessagesRepository()).thenReturn(messageRepository);
         viewModel = new ActivitiesStartedViewModel(application);
         viewModel.getNameIsTooShortObservable().observeForever(nameIsTooShortObserver);
         viewModel.getActivityAlreadyStartedObservable().observeForever(activityAlreadyStartedObserver);
@@ -71,6 +75,24 @@ public class ActivitiesStartedViewModelTest {
         Mockito.when(repository.findAllForTodayWithNameLike(fishing)).thenReturn(expectedStartEvents);
         List<ActivityStartEvent> startEvents = viewModel.getActivitiesWithSimilarNames(fishing);
         Assert.assertEquals(expectedStartEvents, startEvents);
+    }
+
+    @Test
+    public void getObservableMessage() {
+        LiveData<String> observableMessage = viewModel.getObservableMessage();
+        observableMessage.observeForever(message -> {});
+        // Since list of activities is empty, we expect to see a friendly message.
+        String expectedMessage = "Hi :)";
+        Mockito.when(messageRepository.findOneThatAppliesTo(Mockito.any(LocalDateTime.class))).thenReturn(expectedMessage);
+        activityStartEvents.setValue(Collections.emptyList());
+        Assert.assertEquals(expectedMessage, observableMessage.getValue());
+        // Now when list is not empty anymore, there should be no message updates.
+        Mockito.when(messageRepository.findOneThatAppliesTo(Mockito.any(LocalDateTime.class))).thenReturn("Get off my face!!!");
+        activityStartEvents.setValue(Collections.singletonList(Mockito.mock(ActivityStartEvent.class)));
+        Assert.assertEquals(expectedMessage, observableMessage.getValue());
+        // Even if list is null, we should not update the message.
+        activityStartEvents.setValue(null);
+        Assert.assertEquals(expectedMessage, observableMessage.getValue());
     }
 
     @Test

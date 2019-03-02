@@ -12,6 +12,7 @@ import com.example.timetrakr.R;
 import com.example.timetrakr.model.activity.events.ActivityStartEvent;
 import com.example.timetrakr.view.activities.started.dialog.StartActivityDialogDisplayer;
 import com.example.timetrakr.view.activities.started.dialog.StartActivityDialogDisplayerFactory;
+import com.example.timetrakr.view.common.recycler.EmptiableRecyclerView;
 import com.example.timetrakr.view.common.recycler.LeftRightCallback;
 import com.example.timetrakr.viewmodel.activities.started.ActivitiesStartedViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -26,7 +27,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Displays list of activity start events, created today.
@@ -75,18 +75,19 @@ public class ActivitiesStartedFragment extends Fragment {
         /*
         Initialize recycler view that displays all started activities.
          */
-        RecyclerView recyclerView = root.findViewById(R.id.activities_started_recycler_view);
+        EmptiableRecyclerView<ActivityStartEvent> recyclerView = root.findViewById(R.id.activities_started_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         // Setup recycler view adapter.
         ActivityStartViewHolderFactory viewHolderFactory = new ActivityStartViewHolderFactory(getString(R.string.since), formatter);
         ActivitiesStartEventsAdapter adapter = new ActivitiesStartEventsAdapter(viewHolderFactory);
-        recyclerView.setAdapter(adapter);
+        recyclerView.setListAdapter(adapter);
         // Update recycler view adapter when list of today's activity start events is updated.
-        viewModel.getActivityStartEvents().observe(this, adapter::updateActivityStartEvents);
+        viewModel.getActivityStartEvents().observe(this, recyclerView::displayList);
+        viewModel.getObservableMessage().observe(this, recyclerView::setEmptyListPlaceholderText);
         // Prepare item touch helper for swipe gestures on recycler view.
         LeftRightCallback callback = new LeftRightCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+        recyclerView.setItemTouchHelper(itemTouchHelper);
         // Enable swipe left to delete activity.
         Drawable icon = getResources().getDrawable(R.drawable.ic_delete_forever_black_24dp, null);
         ColorDrawable background = new ColorDrawable(getResources().getColor(R.color.deleteRed, null));
