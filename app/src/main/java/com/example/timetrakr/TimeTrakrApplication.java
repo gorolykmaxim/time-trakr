@@ -16,7 +16,10 @@ import com.example.timetrakr.model.messages.common.CountIs;
 import com.example.timetrakr.model.messages.common.CountIsGreaterThan;
 import com.example.timetrakr.model.messages.common.Not;
 import com.example.timetrakr.model.messages.dates.DayOfTheWeekBuilder;
+import com.example.timetrakr.model.messages.dates.IsTimeEarlierThan;
+import com.example.timetrakr.model.messages.dates.IsTimeLaterThan;
 import com.example.timetrakr.model.messages.dates.IsWeekendDay;
+import com.example.timetrakr.model.messages.dates.TimeOfTheDayBuilder;
 import com.example.timetrakr.model.messages.durations.ActivityDurationWithDurationShorterThanBuilder;
 import com.example.timetrakr.model.messages.durations.ActivityNameWithDurationLongerThanBuilder;
 import com.example.timetrakr.model.messages.durations.ActivityNameWithDurationShorterThanBuilder;
@@ -27,6 +30,8 @@ import com.example.timetrakr.persistence.TimeTrakrDatabase;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -78,11 +83,11 @@ public class TimeTrakrApplication extends Application {
                 new Message<>(getString(R.string.duration_message_10)),
                 new Message<>(getString(R.string.duration_message_11)));
         Duration duration = Duration.ofMinutes(30);
-        DurationFormatter formatter = new DurationFormatter();
+        DurationFormatter durationFormatter = new DurationFormatter();
         durationMessagesRepository.save(new HasDurationShorterThan(duration),
                 new Message<>(getString(R.string.duration_message_12), new ActivityNameWithDurationShorterThanBuilder(duration)),
                 new Message<>(getString(R.string.duration_message_13), new ActivityNameWithDurationShorterThanBuilder(duration)),
-                new Message<>(getString(R.string.duration_message_14), new ActivityNameWithDurationShorterThanBuilder(duration), new ActivityDurationWithDurationShorterThanBuilder(duration, formatter)));
+                new Message<>(getString(R.string.duration_message_14), new ActivityNameWithDurationShorterThanBuilder(duration), new ActivityDurationWithDurationShorterThanBuilder(duration, durationFormatter)));
         duration = Duration.ofHours(4);
         durationMessagesRepository.save(new And<>(new CountIs<>(1), new HasDurationLongerThan(duration)),
                 new Message<>(getString(R.string.duration_message_15), new ActivityNameWithDurationLongerThanBuilder(duration)),
@@ -107,6 +112,9 @@ public class TimeTrakrApplication extends Application {
                 new Message<>(getString(R.string.activity_start_message4), new DayOfTheWeekBuilder()),
                 new Message<>(getString(R.string.activity_start_message5), new DayOfTheWeekBuilder()),
                 new Message<>(getString(R.string.activity_start_message6), new DayOfTheWeekBuilder()));
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("H:mm");
+        activityMessagesRepository.save(new And<>(new IsTimeLaterThan(LocalTime.of(20, 0)), new IsTimeEarlierThan(LocalTime.of(8, 0))),
+                new Message<>(getString(R.string.activity_start_message7), new TimeOfTheDayBuilder(dateTimeFormatter)));
     }
 
     /**
