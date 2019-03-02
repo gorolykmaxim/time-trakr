@@ -47,4 +47,5 @@
     <string name="activity_start_message7">Do you really need to pop me out at %s?</string>
     <string name="activity_start_message8">Go to sleep, you weirdo.</string>
     <string name="activity_start_message9">Nothing? Really!? Wanna be late at home again?</string>
+    <string name="activity_start_message10">Do you really need to pop me out at %s %s?</string>
 </resources>
