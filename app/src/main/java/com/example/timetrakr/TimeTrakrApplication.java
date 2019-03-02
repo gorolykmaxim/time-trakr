@@ -82,6 +82,7 @@ public class TimeTrakrApplication extends Application {
                 new Message<>(getString(R.string.duration_message_15), new ActivityNameWithDurationLongerThanBuilder(duration)),
                 new Message<>(getString(R.string.duration_message_16), new ActivityNameWithDurationLongerThanBuilder(duration)),
                 new Message<>(getString(R.string.duration_message_17), new ActivityNameWithDurationLongerThanBuilder(duration)));
+        durationMessagesRepository.save(new CountIsGreaterThan<>(4), new Message<>(getString(R.string.duration_message_18)));
     }
 
     /**

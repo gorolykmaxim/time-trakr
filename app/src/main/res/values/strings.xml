@@ -30,4 +30,5 @@
     <string name="duration_message_15">Take a break, pal. “%s” won’t go anywhere. Probably.</string>
     <string name="duration_message_16">Stand up, go outside and take a pause. “%s” is tough, but you can beat it. Just need a different angle.</string>
     <string name="duration_message_17">You should’ve split that “%s” into sub-tasks, you dummy.</string>
+    <string name="duration_message_18">What a roller coaster you have today.</string>
 </resources>
