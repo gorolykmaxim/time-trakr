@@ -10,6 +10,7 @@ import com.example.timetrakr.model.activity.events.ActivityStartEventRepository;
 import com.example.timetrakr.model.messages.Message;
 import com.example.timetrakr.model.messages.MessageRepository;
 import com.example.timetrakr.model.messages.common.CountIs;
+import com.example.timetrakr.model.messages.common.CountIsGreaterThan;
 import com.example.timetrakr.persistence.TimeTrakrDatabase;
 
 import java.util.List;
@@ -51,6 +52,13 @@ public class TimeTrakrApplication extends Application {
                 new Message<>(getString(R.string.duration_message_1)),
                 new Message<>(getString(R.string.duration_message_2)),
                 new Message<>(getString(R.string.duration_message_3)));
+        durationMessagesRepository.save(new CountIsGreaterThan<>(0),
+                new Message<>(getString(R.string.duration_message_4)),
+                new Message<>(getString(R.string.duration_message_5)),
+                new Message<>(getString(R.string.duration_message_6)),
+                new Message<>(getString(R.string.duration_message_7)),
+                new Message<>(getString(R.string.duration_message_8)),
+                new Message<>(getString(R.string.duration_message_9)));
     }
 
     /**

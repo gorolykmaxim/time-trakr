@@ -14,6 +14,12 @@
     <string name="total_duration">Total duration: %s</string>
     <!--Activity durations related messages-->
     <string name="duration_message_1">What did you expect to see here? Try actually doing something first, then come back.</string>
-    <string name="duration_message_2">The rolling stone gathers no moss… nevermind, just trying to be smart right here.</string>
-    <string name="duration_message_3">The sleeping fox catches no chickens… nevermind, just trying to be smart right here.</string>
+    <string name="duration_message_2">The rolling stone gathers no moss&#8230; nevermind, just trying to be smart right here.</string>
+    <string name="duration_message_3">The sleeping fox catches no chickens&#8230; nevermind, just trying to be smart right here.</string>
+    <string name="duration_message_4">&#8230; what? A chicken?</string>
+    <string name="duration_message_5">*Whistles that bloody song, that got stuck in your head last evening.*</string>
+    <string name="duration_message_6">This is just a fallback-message, so nevermind.</string>
+    <string name="duration_message_7">Have you checked your Twitter lately?</string>
+    <string name="duration_message_8">Ya know, i was thinking about dismissal&#8230; Did i just said that out loud?</string>
+    <string name="duration_message_9">They are watching. Or&#8230; at least i\'m watching.</string>
 </resources>
