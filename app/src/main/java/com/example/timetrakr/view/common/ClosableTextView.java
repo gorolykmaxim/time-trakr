@@ -24,6 +24,7 @@ public class ClosableTextView extends RelativeLayout {
      */
     public ClosableTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        inflate(context, R.layout.closable_text_view, this);
         initialize(context, attrs);
     }
 
@@ -37,7 +38,6 @@ public class ClosableTextView extends RelativeLayout {
      * @param attrs attributes to initialize text view with
      */
     void initialize(Context context, AttributeSet attrs) {
-        inflate(context, R.layout.closable_text_view, this);
         textView = findViewById(R.id.text);
         ImageButton closeButton = findViewById(R.id.close_button);
         closeButton.setOnClickListener(v -> {

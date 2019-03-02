@@ -4,22 +4,15 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.timetrakr.R;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({RelativeLayout.class})
 public class ClosableTextViewTest {
 
     private ClosableTextView closableTextView;
@@ -39,7 +32,6 @@ public class ClosableTextViewTest {
         Mockito.doCallRealMethod().when(closableTextView).hide();
         Mockito.when(closableTextView.findViewById(R.id.text)).thenReturn(textView);
         Mockito.when(closableTextView.findViewById(R.id.close_button)).thenReturn(closeButton);
-        PowerMockito.stub(PowerMockito.method(RelativeLayout.class, "inflate")).toReturn(null);
         Context context = Mockito.mock(Context.class);
         AttributeSet attrs = Mockito.mock(AttributeSet.class);
         ArgumentCaptor<View.OnClickListener> onClickCaptor = ArgumentCaptor.forClass(View.OnClickListener.class);
