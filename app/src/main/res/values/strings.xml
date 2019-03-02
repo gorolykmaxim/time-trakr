@@ -40,4 +40,8 @@
     <!--Activity start events related messages-->
     <string name="activity_start_message1">Don’t be shy, press that little green button down there.</string>
     <string name="activity_start_message2">I dare you! I double-dare you press that button down there! You think you’r tough huh? You think you have guts to press that button? Try me!</string>
+    <string name="activity_start_message3">Em… Hello there? Are you lost? It’s %s. Nothing to look at here.</string>
+    <string name="activity_start_message4">It’s %s. Close me RIGHT NOW!</string>
+    <string name="activity_start_message5">Yeah-yeah i’m cool and stuff. Can’t get enough of me? Bae, it’s %s. I need a rest as much as you.</string>
+    <string name="activity_start_message6">What? I was having a wonderful %s and then you showed up. I’m trying not to be offensive here, but can you get on with your day and leave me, please?</string>
 </resources>

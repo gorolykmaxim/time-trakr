@@ -15,6 +15,8 @@ import com.example.timetrakr.model.messages.common.Any;
 import com.example.timetrakr.model.messages.common.CountIs;
 import com.example.timetrakr.model.messages.common.CountIsGreaterThan;
 import com.example.timetrakr.model.messages.common.Not;
+import com.example.timetrakr.model.messages.dates.DayOfTheWeekBuilder;
+import com.example.timetrakr.model.messages.dates.IsWeekendDay;
 import com.example.timetrakr.model.messages.durations.ActivityDurationWithDurationShorterThanBuilder;
 import com.example.timetrakr.model.messages.durations.ActivityNameWithDurationLongerThanBuilder;
 import com.example.timetrakr.model.messages.durations.ActivityNameWithDurationShorterThanBuilder;
@@ -100,6 +102,11 @@ public class TimeTrakrApplication extends Application {
         activityMessagesRepository.save(new Any<>(),
                 new Message<>(getString(R.string.activity_start_message1)),
                 new Message<>(getString(R.string.activity_start_message2)));
+        activityMessagesRepository.save(new IsWeekendDay(),
+                new Message<>(getString(R.string.activity_start_message3), new DayOfTheWeekBuilder()),
+                new Message<>(getString(R.string.activity_start_message4), new DayOfTheWeekBuilder()),
+                new Message<>(getString(R.string.activity_start_message5), new DayOfTheWeekBuilder()),
+                new Message<>(getString(R.string.activity_start_message6), new DayOfTheWeekBuilder()));
     }
 
     /**
