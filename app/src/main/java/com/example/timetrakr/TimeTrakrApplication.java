@@ -2,6 +2,7 @@ package com.example.timetrakr;
 
 import android.app.Application;
 
+import com.example.timetrakr.common.DurationFormatter;
 import com.example.timetrakr.model.activity.duration.ActivityDuration;
 import com.example.timetrakr.model.activity.duration.ActivityDurationCalculator;
 import com.example.timetrakr.model.activity.duration.ActivityDurationFactory;
@@ -13,7 +14,10 @@ import com.example.timetrakr.model.messages.common.And;
 import com.example.timetrakr.model.messages.common.CountIs;
 import com.example.timetrakr.model.messages.common.CountIsGreaterThan;
 import com.example.timetrakr.model.messages.common.Not;
+import com.example.timetrakr.model.messages.durations.ActivityDurationWithDurationShorterThanBuilder;
+import com.example.timetrakr.model.messages.durations.ActivityNameWithDurationShorterThanBuilder;
 import com.example.timetrakr.model.messages.durations.HasDurationLongerThan;
+import com.example.timetrakr.model.messages.durations.HasDurationShorterThan;
 import com.example.timetrakr.persistence.TimeTrakrDatabase;
 
 import java.time.Duration;
@@ -66,6 +70,12 @@ public class TimeTrakrApplication extends Application {
         durationMessagesRepository.save(new And<>(new CountIsGreaterThan<>(0), new Not<>(new HasDurationLongerThan(Duration.ofMinutes(1)))),
                 new Message<>(getString(R.string.duration_message_10)),
                 new Message<>(getString(R.string.duration_message_11)));
+        Duration duration = Duration.ofMinutes(30);
+        DurationFormatter formatter = new DurationFormatter();
+        durationMessagesRepository.save(new HasDurationShorterThan(duration),
+                new Message<>(getString(R.string.duration_message_12), new ActivityNameWithDurationShorterThanBuilder(duration)),
+                new Message<>(getString(R.string.duration_message_13), new ActivityNameWithDurationShorterThanBuilder(duration)),
+                new Message<>(getString(R.string.duration_message_14), new ActivityNameWithDurationShorterThanBuilder(duration), new ActivityDurationWithDurationShorterThanBuilder(duration, formatter)));
     }
 
     /**

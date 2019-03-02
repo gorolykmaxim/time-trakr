@@ -24,4 +24,7 @@
     <string name="duration_message_9">They are watching. Or&#8230; at least i\'m watching.</string>
     <string name="duration_message_10">You are really trying, aren\'t ya? Keep trying a lil bit more than one minute and you will inevitably see the result.</string>
     <string name="duration_message_11">It is not a sex, you have to last longer than a minute to see results here.</string>
+    <string name="duration_message_12">Did you forget about “%s”?</string>
+    <string name="duration_message_13">I think you should work more on that “%s”.</string>
+    <string name="duration_message_14">”%s” for %s? Am i the only one embarrassed here to log this in the actual time tracking system?</string>
 </resources>
