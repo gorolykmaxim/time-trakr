@@ -79,15 +79,15 @@ public class TimeTrakrApplication extends Application {
                 new Message<>(getString(R.string.duration_message_7)),
                 new Message<>(getString(R.string.duration_message_8)),
                 new Message<>(getString(R.string.duration_message_9)));
-        durationMessagesRepository.save(new And<>(new CountIsGreaterThan<>(0), new Not<>(new HasDurationLongerThan(Duration.ofMinutes(1)))),
-                new Message<>(getString(R.string.duration_message_10)),
-                new Message<>(getString(R.string.duration_message_11)));
         Duration duration = Duration.ofMinutes(30);
         DurationFormatter durationFormatter = new DurationFormatter();
         durationMessagesRepository.save(new HasDurationShorterThan(duration),
                 new Message<>(getString(R.string.duration_message_12), new ActivityNameWithDurationShorterThanBuilder(duration)),
                 new Message<>(getString(R.string.duration_message_13), new ActivityNameWithDurationShorterThanBuilder(duration)),
                 new Message<>(getString(R.string.duration_message_14), new ActivityNameWithDurationShorterThanBuilder(duration), new ActivityDurationWithDurationShorterThanBuilder(duration, durationFormatter)));
+        durationMessagesRepository.save(new And<>(new CountIsGreaterThan<>(0), new Not<>(new HasDurationLongerThan(Duration.ofMinutes(1)))),
+                new Message<>(getString(R.string.duration_message_10)),
+                new Message<>(getString(R.string.duration_message_11)));
         duration = Duration.ofHours(4);
         durationMessagesRepository.save(new And<>(new CountIs<>(1), new HasDurationLongerThan(duration)),
                 new Message<>(getString(R.string.duration_message_15), new ActivityNameWithDurationLongerThanBuilder(duration)),
