@@ -15,6 +15,7 @@ import com.example.timetrakr.model.messages.common.Any;
 import com.example.timetrakr.model.messages.common.CountIs;
 import com.example.timetrakr.model.messages.common.CountIsGreaterThan;
 import com.example.timetrakr.model.messages.common.Not;
+import com.example.timetrakr.model.messages.common.Or;
 import com.example.timetrakr.model.messages.dates.DayOfTheWeekBuilder;
 import com.example.timetrakr.model.messages.dates.IsTimeEarlierThan;
 import com.example.timetrakr.model.messages.dates.IsTimeLaterThan;
@@ -113,13 +114,13 @@ public class TimeTrakrApplication extends Application {
                 new Message<>(getString(R.string.activity_start_message5), new DayOfTheWeekBuilder()),
                 new Message<>(getString(R.string.activity_start_message6), new DayOfTheWeekBuilder()));
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("H:mm");
-        activityMessagesRepository.save(new And<>(new IsTimeLaterThan(LocalTime.of(20, 0)), new IsTimeEarlierThan(LocalTime.of(8, 0))),
+        activityMessagesRepository.save(new Or<>(new IsTimeLaterThan(LocalTime.of(20, 0)), new IsTimeEarlierThan(LocalTime.of(8, 0))),
                 new Message<>(getString(R.string.activity_start_message7), new TimeOfTheDayBuilder(dateTimeFormatter)));
-        activityMessagesRepository.save(new And<>(new IsTimeLaterThan(LocalTime.of(0, 0)), new IsTimeEarlierThan(LocalTime.of(7, 0))),
+        activityMessagesRepository.save(new Or<>(new IsTimeLaterThan(LocalTime.of(0, 0)), new IsTimeEarlierThan(LocalTime.of(7, 0))),
                 new Message<>(getString(R.string.activity_start_message8)));
         activityMessagesRepository.save(new And<>(new Not<>(new IsWeekendDay()), new IsTimeLaterThan(LocalTime.of(10, 0))),
                 new Message<>(getString(R.string.activity_start_message9)));
-        activityMessagesRepository.save(new And<>(new IsWeekendDay(), new IsTimeLaterThan(LocalTime.of(18, 0)), new IsTimeEarlierThan(LocalTime.of(12, 0))),
+        activityMessagesRepository.save(new And<>(new IsWeekendDay(), new Or<>(new IsTimeLaterThan(LocalTime.of(18, 0)), new IsTimeEarlierThan(LocalTime.of(12, 0)))),
                 new Message<>(getString(R.string.activity_start_message10), new TimeOfTheDayBuilder(dateTimeFormatter), new DayOfTheWeekBuilder()));
     }
 
