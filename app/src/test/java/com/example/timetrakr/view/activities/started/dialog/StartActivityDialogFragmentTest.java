@@ -33,8 +33,10 @@ import androidx.fragment.app.DialogFragment;
 public class StartActivityDialogFragmentTest {
 
     private DateTimeFormatter formatter;
+    private StartActivityDialogFactory factory;
     private StartActivityDialogFragment dialogFragment;
     private StartActivityDialogFragment.OnStartActivityListener listener;
+    private DialogInterface.OnDismissListener onDismissListener;
     private LayoutInflater inflater;
     private ViewGroup container, viewGroup;
     private EditText activityNameEditText;
@@ -49,9 +51,12 @@ public class StartActivityDialogFragmentTest {
     @Before
     public void setUp() throws Exception {
         formatter = DateTimeFormatter.ofPattern("HH:mm");
-        dialogFragment = StartActivityDialogFragment.create(formatter);
+        factory = new StartActivityDialogFactory(formatter);
         listener = Mockito.mock(StartActivityDialogFragment.OnStartActivityListener.class);
-        dialogFragment.setOntStartActivityListener(listener);
+        factory.setOnStartActivityListener(listener);
+        dialogFragment = factory.create();
+        onDismissListener = Mockito.mock(DialogInterface.OnDismissListener.class);
+        dialogFragment.setOnDismiss(onDismissListener);
         // Initialize android views.
         inflater = Mockito.mock(LayoutInflater.class);
         container = Mockito.mock(ViewGroup.class);
@@ -109,6 +114,7 @@ public class StartActivityDialogFragmentTest {
         editorActionListener.onEditorAction(activityNameEditText, 0, Mockito.mock(KeyEvent.class));
         editorActionListener.onEditorAction(activityNameEditText, 0, null);
         Mockito.verify(listener, Mockito.times(1)).onStartActivity(name, startDateCaptor.getValue());
+        Mockito.verify(onDismissListener, Mockito.times(1)).onDismiss(dialogFragment.getDialog());
     }
 
     @Test
@@ -128,6 +134,7 @@ public class StartActivityDialogFragmentTest {
         View.OnClickListener onStartClick = onStartClickCaptor.getValue();
         onStartClick.onClick(startButton);
         Mockito.verify(listener).onStartActivity(name, expectedStartDate);
+        Mockito.verify(onDismissListener, Mockito.times(1)).onDismiss(dialogFragment.getDialog());
     }
 
     @Test
@@ -139,6 +146,7 @@ public class StartActivityDialogFragmentTest {
         View.OnClickListener onStartClick = onStartClickCaptor.getValue();
         onStartClick.onClick(startButton);
         Mockito.verify(listener).onStartActivity("", startDateCaptor.getValue());
+        Mockito.verify(onDismissListener, Mockito.times(1)).onDismiss(dialogFragment.getDialog());
     }
 
     @Test
@@ -148,6 +156,7 @@ public class StartActivityDialogFragmentTest {
         dialogFragment.setOnCancelListener(onCancelListener);
         dialogFragment.onCancel(dialog);
         Mockito.verify(onCancelListener).onCancel(dialog);
+        Mockito.verify(onDismissListener, Mockito.times(1)).onDismiss(dialog);
     }
 
     private void viewStateInitialization() {

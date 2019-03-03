@@ -12,6 +12,7 @@ import android.widget.EditText;
 
 import com.example.timetrakr.R;
 import com.example.timetrakr.view.common.TimeEdit;
+import com.example.timetrakr.view.common.dialog.DismissableDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.time.LocalDateTime;
@@ -24,11 +25,13 @@ import androidx.fragment.app.DialogFragment;
 /**
  * Dialog fragment, that allows user to start new activities.
  */
-public class StartActivityDialogFragment extends BottomSheetDialogFragment {
+public class StartActivityDialogFragment extends BottomSheetDialogFragment implements DismissableDialog {
 
     private State state;
     private DateTimeFormatter formatter;
+    private OnStartActivityListener onStartActivityListener;
     private DialogInterface.OnCancelListener onCancelListener;
+    private DialogInterface.OnDismissListener onDismissListener;
 
     /**
      * Construct the dialog.
@@ -36,6 +39,14 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment {
     public StartActivityDialogFragment() {
         state = new State(this);
         state.setStartDate(LocalDateTime.now());
+        state.setListener((activityName, startDate) -> {
+            if (onStartActivityListener != null) {
+                onStartActivityListener.onStartActivity(activityName, startDate);
+            }
+            if (onDismissListener != null) {
+                onDismissListener.onDismiss(getDialog());
+            }
+        });
     }
 
     /**
@@ -65,7 +76,7 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment {
      * @param listener listener to call
      */
     public void setOntStartActivityListener(OnStartActivityListener listener) {
-        state.setListener(listener);
+        onStartActivityListener = listener;
     }
 
     /**
@@ -93,6 +104,9 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment {
     public void onCancel(@NonNull DialogInterface dialog) {
         if (onCancelListener != null) {
             onCancelListener.onCancel(dialog);
+        }
+        if (onDismissListener != null) {
+            onDismissListener.onDismiss(dialog);
         }
     }
 
@@ -125,6 +139,14 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment {
         Button startButton = viewGroup.findViewById(R.id.start_activity_dialog_start_button);
         startButton.setOnClickListener(v -> state.start());
         return viewGroup;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setOnDismiss(DialogInterface.OnDismissListener onDismiss) {
+        onDismissListener = onDismiss;
     }
 
     /**

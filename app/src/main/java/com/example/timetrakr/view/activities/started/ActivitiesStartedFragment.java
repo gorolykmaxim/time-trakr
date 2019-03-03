@@ -10,8 +10,9 @@ import android.widget.Toast;
 
 import com.example.timetrakr.R;
 import com.example.timetrakr.model.activity.events.ActivityStartEvent;
-import com.example.timetrakr.view.activities.started.dialog.StartActivityDialogDisplayer;
-import com.example.timetrakr.view.activities.started.dialog.StartActivityDialogDisplayerFactory;
+import com.example.timetrakr.view.activities.started.dialog.StartActivityDialogFactory;
+import com.example.timetrakr.view.activities.started.dialog.StartActivityDialogFragment;
+import com.example.timetrakr.view.common.dialog.DialogDisplayer;
 import com.example.timetrakr.view.common.recycler.EmptiableRecyclerView;
 import com.example.timetrakr.view.common.recycler.LeftRightCallback;
 import com.example.timetrakr.viewmodel.activities.started.ActivitiesStartedViewModel;
@@ -33,7 +34,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
  */
 public class ActivitiesStartedFragment extends Fragment {
 
-    private StartActivityDialogDisplayer startActivityDialogDisplayer;
+    private DialogDisplayer<StartActivityDialogFragment> startActivityDialogDisplayer;
 
     /**
      * {@inheritDoc}
@@ -67,9 +68,9 @@ public class ActivitiesStartedFragment extends Fragment {
             Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
         });
         // Initialize start activity dialog displayer.
-        StartActivityDialogDisplayerFactory dialogFactory = new StartActivityDialogDisplayerFactory(formatter);
-        startActivityDialogDisplayer = new StartActivityDialogDisplayer(dialogFactory, "start_activity_dialog");
-        startActivityDialogDisplayer.setOnStartActivityListener(viewModel::startNewActivity);
+        StartActivityDialogFactory dialogFactory = new StartActivityDialogFactory(formatter);
+        dialogFactory.setOnStartActivityListener(viewModel::startNewActivity);
+        startActivityDialogDisplayer = new DialogDisplayer<>(dialogFactory, "start_activity_dialog");
         // Open bottom sheet dialog to create new activity when clicking on a FAB.
         startActivityButton.setOnClickListener(v -> startActivityDialogDisplayer.display(getChildFragmentManager()));
         /*
@@ -112,8 +113,8 @@ public class ActivitiesStartedFragment extends Fragment {
         listener = viewHolder -> {
             adapter.notifyItemChanged(viewHolder.getAdapterPosition());
             ActivityStartViewHolder holder = (ActivityStartViewHolder)viewHolder;
-            String name = holder.getActivityName();
-            startActivityDialogDisplayer.display(name, getChildFragmentManager());
+            StartActivityDialogFragment dialogFragment = startActivityDialogDisplayer.display(getChildFragmentManager());
+            dialogFragment.setActivityName(holder.getActivityName());
         };
         callback.setRightSwipe(icon, background, listener);
         return root;
