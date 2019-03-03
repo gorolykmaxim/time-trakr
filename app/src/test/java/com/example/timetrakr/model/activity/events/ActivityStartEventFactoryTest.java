@@ -16,7 +16,7 @@ public class ActivityStartEventFactoryTest {
     }
 
     @Test
-    public void createWithDefaultMinimalNameSize() throws NewActivityNameIsTooShortException {
+    public void createWithDefaultMinimalNameSize() throws NewActivityNameIsTooShortException, StartActivityInFutureException {
         String name = "BAL";
         LocalDateTime startDate = LocalDateTime.now();
         ActivityStartEvent event = factory.createNew(name, startDate);
@@ -25,12 +25,12 @@ public class ActivityStartEventFactoryTest {
     }
 
     @Test(expected = NewActivityNameIsTooShortException.class)
-    public void failToCreateWithDefaultMinimalNameSize() throws NewActivityNameIsTooShortException {
+    public void failToCreateWithDefaultMinimalNameSize() throws NewActivityNameIsTooShortException, StartActivityInFutureException {
         factory.createNew("PA", LocalDateTime.now());
     }
 
     @Test
-    public void createWithCustomMinimalNameSize() throws NewActivityNameIsTooShortException {
+    public void createWithCustomMinimalNameSize() throws NewActivityNameIsTooShortException, StartActivityInFutureException {
         String name = "Horse riding";
         LocalDateTime startDate = LocalDateTime.now();
         factory.setMinimalActivityNameLength(4);
@@ -40,7 +40,7 @@ public class ActivityStartEventFactoryTest {
     }
 
     @Test
-    public void failToCreateWithCustomMinimalNameSize() {
+    public void failToCreateWithCustomMinimalNameSize() throws StartActivityInFutureException {
         try {
             factory.setMinimalActivityNameLength(5);
             factory.createNew("Work", LocalDateTime.now());
@@ -49,6 +49,12 @@ public class ActivityStartEventFactoryTest {
             Assert.assertEquals("Work", e.getActivityName());
             Assert.assertEquals(5, e.getExpectedMinimalLength());
         }
+    }
+
+    @Test(expected = StartActivityInFutureException.class)
+    public void failedToStartActivityInTheFuture() throws NewActivityNameIsTooShortException, StartActivityInFutureException {
+        LocalDateTime tomorrow = LocalDateTime.now().plusDays(1);
+        factory.createNew("Do the important stuff", tomorrow);
     }
 
     @Test

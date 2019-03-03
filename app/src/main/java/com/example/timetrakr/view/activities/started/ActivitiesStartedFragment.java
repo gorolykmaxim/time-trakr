@@ -67,6 +67,11 @@ public class ActivitiesStartedFragment extends Fragment {
             String message = String.format(getString(R.string.activity_already_started), anotherActivity.getActivityName(), anotherActivity.getStartDate().format(formatter));
             Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
         });
+        // Prepare listener for case when created activity start date is in the future.
+        viewModel.getStartInFutureObservable().observe(this, e -> {
+            String message = String.format(getString(R.string.start_activity_in_future), e.getCurrentDate().format(formatter), e.getSpecifiedDate().format(formatter));
+            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+        });
         // Initialize start activity dialog displayer.
         StartActivityDialogFactory dialogFactory = new StartActivityDialogFactory(formatter);
         dialogFactory.setOnStartActivityListener(viewModel::startNewActivity);

@@ -44,6 +44,7 @@ public class ActivitiesStartedFragmentTest {
         Mockito.when(viewModel.getNameIsTooShortObservable()).thenReturn(Mockito.mock(LiveData.class));
         Mockito.when(viewModel.getActivityAlreadyStartedObservable()).thenReturn(Mockito.mock(LiveData.class));
         Mockito.when(viewModel.getObservableMessage()).thenReturn(Mockito.mock(LiveData.class));
+        Mockito.when(viewModel.getStartInFutureObservable()).thenReturn(Mockito.mock(LiveData.class));
         provider = Mockito.mock(ViewModelProvider.class);
         Mockito.when(provider.get(ActivitiesStartedViewModel.class)).thenReturn(viewModel);
         resources = Mockito.mock(Resources.class);

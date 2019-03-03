@@ -35,10 +35,16 @@ public class ActivityStartEventFactory {
      * @return started activity event
      * @throws NewActivityNameIsTooShortException specified activity name is shorter than
      * the specified minimal activity name length
+     * @throws StartActivityInFutureException specified start date is in the future. You can
+     * only specify dates that are from the past
      */
-    public ActivityStartEvent createNew(String activityName, LocalDateTime startDate) throws NewActivityNameIsTooShortException {
+    public ActivityStartEvent createNew(String activityName, LocalDateTime startDate) throws NewActivityNameIsTooShortException, StartActivityInFutureException {
         if (activityName.length() < minimalActivityNameLength) {
             throw new NewActivityNameIsTooShortException(activityName, minimalActivityNameLength);
+        }
+        LocalDateTime currentDate = LocalDateTime.now();
+        if (currentDate.isBefore(startDate)) {
+            throw new StartActivityInFutureException(startDate, currentDate);
         }
         return new ActivityStartEvent(activityName, startDate);
     }

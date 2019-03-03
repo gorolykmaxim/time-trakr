@@ -12,6 +12,7 @@
     <string name="work_logs_for_today">Work logs for today</string>
     <string name="start">Start</string>
     <string name="total_duration">Total duration: %s</string>
+    <string name="start_activity_in_future">You can\'t start activity in the future. It is %s right now, and you have set start date to %s.</string>
     <!--Activity durations related messages-->
     <string name="duration_message_1">What did you expect to see here? Try actually doing something first, then come back.</string>
     <string name="duration_message_2">The rolling stone gathers no moss&#8230; nevermind, just trying to be smart right here.</string>

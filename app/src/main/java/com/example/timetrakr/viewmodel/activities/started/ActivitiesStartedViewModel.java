@@ -8,6 +8,7 @@ import com.example.timetrakr.model.activity.events.ActivityStartEventFactory;
 import com.example.timetrakr.model.activity.events.ActivityStartEventRepository;
 import com.example.timetrakr.model.activity.events.AnotherActivityAlreadyStartedException;
 import com.example.timetrakr.model.activity.events.NewActivityNameIsTooShortException;
+import com.example.timetrakr.model.activity.events.StartActivityInFutureException;
 import com.example.timetrakr.model.messages.MessageRepository;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,7 @@ public class ActivitiesStartedViewModel extends AndroidViewModel {
     private LiveData<List<ActivityStartEvent>> activityStartEvents;
     private MutableLiveData<NewActivityNameIsTooShortException> nameIsTooShortObservable;
     private MutableLiveData<AnotherActivityAlreadyStartedException> activityAlreadyStartedObservable;
+    private MutableLiveData<StartActivityInFutureException> startInFutureObservable;
     private MediatorLiveData<String> observableMessage;
     private ActivityStartEventFactory factory;
     private ActivityStartEventRepository repository;
@@ -51,6 +53,7 @@ public class ActivitiesStartedViewModel extends AndroidViewModel {
         factory = timeTrakrApplication.getActivityStartEventFactory();
         nameIsTooShortObservable = new MutableLiveData<>();
         activityAlreadyStartedObservable = new MutableLiveData<>();
+        startInFutureObservable = new MutableLiveData<>();
         observableMessage = new MediatorLiveData<>();
         observableMessage.addSource(activityStartEvents, this::triggerMessageLookupFor);
     }
@@ -95,6 +98,16 @@ public class ActivitiesStartedViewModel extends AndroidViewModel {
     }
 
     /**
+     * Get observable for an exception, that may happen if user will try to start an activity
+     * with a start date set in the future.
+     *
+     * @return observable for an activity start date exception
+     */
+    public LiveData<StartActivityInFutureException> getStartInFutureObservable() {
+        return startInFutureObservable;
+    }
+
+    /**
      * Get observable of a message to display in the activity start events fragment, in when
      * there are no activity start events to display.
      *
@@ -111,9 +124,7 @@ public class ActivitiesStartedViewModel extends AndroidViewModel {
      * @param startDate time when user started the activity
      */
     public void startNewActivity(String activityName, LocalDateTime startDate) {
-        executorService.execute(new StartNewActivity(factory, repository, activityName, startDate,
-                nameIsTooShortObservable,
-                activityAlreadyStartedObservable));
+        executorService.execute(new StartNewActivity(factory, repository, activityName, startDate, nameIsTooShortObservable, activityAlreadyStartedObservable, startInFutureObservable));
     }
 
     /**

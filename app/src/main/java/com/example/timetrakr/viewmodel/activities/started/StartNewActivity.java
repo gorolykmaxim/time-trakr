@@ -5,6 +5,7 @@ import com.example.timetrakr.model.activity.events.ActivityStartEventFactory;
 import com.example.timetrakr.model.activity.events.ActivityStartEventRepository;
 import com.example.timetrakr.model.activity.events.AnotherActivityAlreadyStartedException;
 import com.example.timetrakr.model.activity.events.NewActivityNameIsTooShortException;
+import com.example.timetrakr.model.activity.events.StartActivityInFutureException;
 
 import java.time.LocalDateTime;
 
@@ -21,6 +22,7 @@ public class StartNewActivity implements Runnable {
     private LocalDateTime startDate;
     private MutableLiveData<NewActivityNameIsTooShortException> nameIsTooShortObservable;
     private MutableLiveData<AnotherActivityAlreadyStartedException> activityAlreadyStartedObservable;
+    private MutableLiveData<StartActivityInFutureException> startInFutureObservable;
 
     /**
      * Construct activity start operation.
@@ -31,17 +33,20 @@ public class StartNewActivity implements Runnable {
      * @param startDate time when activity has been started
      * @param nameIsTooShortObservable observable to notify about {@link NewActivityNameIsTooShortException} happened
      * @param activityAlreadyStartedObservable observable to notify about {@link AnotherActivityAlreadyStartedException} happened
+     * @param startInFutureObservable observable to notify about {@link StartActivityInFutureException} happened
      */
     public StartNewActivity(ActivityStartEventFactory factory, ActivityStartEventRepository repository,
                             String activityName, LocalDateTime startDate,
                             MutableLiveData<NewActivityNameIsTooShortException> nameIsTooShortObservable,
-                            MutableLiveData<AnotherActivityAlreadyStartedException> activityAlreadyStartedObservable) {
+                            MutableLiveData<AnotherActivityAlreadyStartedException> activityAlreadyStartedObservable,
+                            MutableLiveData<StartActivityInFutureException> startInFutureObservable) {
         this.factory = factory;
         this.repository = repository;
         this.activityName = activityName;
         this.startDate = startDate;
         this.nameIsTooShortObservable = nameIsTooShortObservable;
         this.activityAlreadyStartedObservable = activityAlreadyStartedObservable;
+        this.startInFutureObservable = startInFutureObservable;
     }
 
     /**
@@ -56,6 +61,8 @@ public class StartNewActivity implements Runnable {
             nameIsTooShortObservable.postValue(e);
         } catch (AnotherActivityAlreadyStartedException e) {
             activityAlreadyStartedObservable.postValue(e);
+        } catch (StartActivityInFutureException e) {
+            startInFutureObservable.postValue(e);
         }
     }
 }
