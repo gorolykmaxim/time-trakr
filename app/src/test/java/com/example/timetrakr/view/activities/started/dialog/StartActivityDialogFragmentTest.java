@@ -11,7 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.timetrakr.R;
-import com.example.timetrakr.view.common.TimeEdit;
+import com.example.timetrakr.view.common.edit.TimeEdit;
 
 import org.junit.Assert;
 import org.junit.Before;

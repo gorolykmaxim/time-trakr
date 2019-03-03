@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.timetrakr.R;
-import com.example.timetrakr.view.common.TimeEdit;
+import com.example.timetrakr.view.common.edit.TimeEdit;
 import com.example.timetrakr.view.common.dialog.DismissableDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 

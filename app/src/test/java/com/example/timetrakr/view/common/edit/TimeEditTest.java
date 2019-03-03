@@ -1,7 +1,9 @@
-package com.example.timetrakr.view.common;
+package com.example.timetrakr.view.common.edit;
 
 import android.app.TimePickerDialog;
 import android.view.View;
+
+import com.example.timetrakr.view.common.dialog.DialogDisplayer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,7 +18,8 @@ import java.time.format.DateTimeFormatter;
 public class TimeEditTest {
 
     private TimeEdit timeEdit;
-    private TimeEdit.TimePickerDialogFactory factory;
+    private DialogDisplayer<TimePickerDialogDecorator> dialogDisplayer;
+    private TimePickerDialogDecoratorFactory factory;
     private DateTimeFormatter formatter;
     private String startTimeTemplate;
 
@@ -25,13 +28,16 @@ public class TimeEditTest {
         formatter = DateTimeFormatter.ofPattern("HH:mm");
         startTimeTemplate = "since %s";
         timeEdit = Mockito.mock(TimeEdit.class);
+        factory = Mockito.mock(TimePickerDialogDecoratorFactory.class);
+        dialogDisplayer = Mockito.mock(DialogDisplayer.class);
         Mockito.doCallRealMethod().when(timeEdit).setFactory(Mockito.any());
+        Mockito.doCallRealMethod().when(timeEdit).setTimePickerDisplayer(Mockito.any());
         Mockito.doCallRealMethod().when(timeEdit).setOnDateChangeListener(Mockito.any());
         Mockito.doCallRealMethod().when(timeEdit).setDisplayFormat(Mockito.anyString());
         Mockito.doCallRealMethod().when(timeEdit).setFormatter(Mockito.any());
         Mockito.doCallRealMethod().when(timeEdit).update(Mockito.any());
-        factory = Mockito.mock(TimeEdit.TimePickerDialogFactory.class);
         timeEdit.setFactory(factory);
+        timeEdit.setTimePickerDisplayer(dialogDisplayer);
         timeEdit.setDisplayFormat(startTimeTemplate);
         timeEdit.setFormatter(formatter);
     }
@@ -49,17 +55,18 @@ public class TimeEditTest {
         timeEdit.update(dateTime);
         TimeEdit.OnDateChangedListener listener = Mockito.mock(TimeEdit.OnDateChangedListener.class);
         timeEdit.setOnDateChangeListener(listener);
-        TimePickerDialog dialog = Mockito.mock(TimePickerDialog.class);
-        Mockito.when(factory.create(Mockito.eq(timeEdit.getContext()), Mockito.notNull(TimePickerDialog.OnTimeSetListener.class), Mockito.eq(dateTime.getHour()), Mockito.eq(dateTime.getMinute()), Mockito.eq(true))).thenReturn(dialog);
         ArgumentCaptor<View.OnClickListener> timeClickCaptor = ArgumentCaptor.forClass(View.OnClickListener.class);
         Mockito.verify(timeEdit).setOnClickListener(timeClickCaptor.capture());
         View.OnClickListener timeClickListener = timeClickCaptor.getValue();
         ArgumentCaptor<TimePickerDialog.OnTimeSetListener> timeSetCaptor = ArgumentCaptor.forClass(TimePickerDialog.OnTimeSetListener.class);
         // Click on the date edit view.
         timeClickListener.onClick(timeEdit);
-        Mockito.verify(factory).create(Mockito.any(), timeSetCaptor.capture(), Mockito.anyInt(), Mockito.anyInt(), Mockito.anyBoolean());
+        Mockito.verify(factory).setContext(timeEdit.getContext());
+        Mockito.verify(factory).setListener(timeSetCaptor.capture());
+        Mockito.verify(factory).setHour(Mockito.anyInt());
+        Mockito.verify(factory).setMinute(Mockito.anyInt());
         TimePickerDialog.OnTimeSetListener timeSetListener = timeSetCaptor.getValue();
-        Mockito.verify(dialog).show();
+        Mockito.verify(dialogDisplayer).display(null);
         // Choose current time in time picker dialog.
         LocalDateTime expectedDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(12, 10));
         timeSetListener.onTimeSet(null, expectedDateTime.getHour(), expectedDateTime.getMinute());

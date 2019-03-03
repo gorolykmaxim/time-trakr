@@ -1,4 +1,4 @@
-package com.example.timetrakr.view.common;
+package com.example.timetrakr.view.common.edit;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 
 import com.example.timetrakr.R;
+import com.example.timetrakr.view.common.dialog.DialogDisplayer;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,7 +24,8 @@ public class TimeEdit extends TextView {
     private String displayFormat;
     private LocalDateTime currentDateTime;
     private DateTimeFormatter formatter;
-    private TimePickerDialogFactory factory;
+    private DialogDisplayer<TimePickerDialogDecorator> timePickerDisplayer;
+    private TimePickerDialogDecoratorFactory factory;
 
     /**
      * Construct a time edit view.
@@ -36,7 +38,8 @@ public class TimeEdit extends TextView {
         TypedArray attributes = context.obtainStyledAttributes(attrs, R.styleable.TimeEdit);
         currentDateTime = LocalDateTime.now();
         displayFormat = attributes.getString(R.styleable.TimeEdit_display_format);
-        factory = new TimePickerDialogFactory();
+        factory = new TimePickerDialogDecoratorFactory();
+        timePickerDisplayer = new DialogDisplayer<>(factory, "time_picker_dialog");
         attributes.recycle();
     }
 
@@ -45,8 +48,17 @@ public class TimeEdit extends TextView {
      *
      * @param factory factory of time picker dialog instances
      */
-    public void setFactory(TimePickerDialogFactory factory) {
+    public void setFactory(TimePickerDialogDecoratorFactory factory) {
         this.factory = factory;
+    }
+
+    /**
+     * Specify dialog displayer to be used to control the time picker dialog.
+     *
+     * @param timePickerDisplayer dialog displayer to use
+     */
+    public void setTimePickerDisplayer(DialogDisplayer<TimePickerDialogDecorator> timePickerDisplayer) {
+        this.timePickerDisplayer = timePickerDisplayer;
     }
 
     /**
@@ -62,8 +74,12 @@ public class TimeEdit extends TextView {
                 update(dateTime);
                 onDateChangeListener.onDateChange(dateTime);
             };
-            TimePickerDialog dialog = factory.create(getContext(), listener, currentDateTime.getHour(), currentDateTime.getMinute(), true);
-            dialog.show();
+            factory.setContext(getContext());
+            factory.setListener(listener);
+            factory.setHour(currentDateTime.getHour());
+            factory.setMinute(currentDateTime.getMinute());
+            // Dialog presented in this displayer does not need a fragment manager to be displayed.
+            timePickerDisplayer.display(null);
         });
     }
 
@@ -95,26 +111,6 @@ public class TimeEdit extends TextView {
     public void update(LocalDateTime dateTime) {
         currentDateTime = dateTime;
         setText(String.format(displayFormat, dateTime.format(formatter)));
-    }
-
-    /**
-     * Factory used to create time picker dialog instances by default.
-     */
-    public static class TimePickerDialogFactory {
-
-        /**
-         * Create a time picker dialog instance.
-         *
-         * @param context context in scope of which dialog will be displayed
-         * @param listener listener called when user selects time in the dialog
-         * @param hour initial hour to be displayed in the dialog
-         * @param minute initial minute to be displayed in the dialog
-         * @param is24HourView if set to true, dialog will display time in 24 hours format
-         * @return time picker dialog
-         */
-        public TimePickerDialog create(Context context, TimePickerDialog.OnTimeSetListener listener, int hour, int minute, boolean is24HourView) {
-            return new TimePickerDialog(context, listener, hour, minute, is24HourView);
-        }
     }
 
     /**
