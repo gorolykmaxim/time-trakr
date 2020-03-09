@@ -1,4 +1,4 @@
-package com.example.timetrakr.view.activities.started.dialog;
+package com.example.timetrakr.view.activities.started;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -10,41 +10,36 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+
 import com.example.timetrakr.R;
 import com.example.timetrakr.view.common.edit.TimeEdit;
-import com.example.timetrakr.view.common.dialog.DismissableDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
-
 /**
  * Dialog fragment, that allows user to start new activities.
  */
-public class StartActivityDialogFragment extends BottomSheetDialogFragment implements DismissableDialog {
-
+public class StartActivityDialogFragment extends BottomSheetDialogFragment {
     private State state;
     private DateTimeFormatter formatter;
     private OnStartActivityListener onStartActivityListener;
-    private DialogInterface.OnCancelListener onCancelListener;
-    private DialogInterface.OnDismissListener onDismissListener;
+    private EditText activityNameEditText;
+    private TimeEdit timeEdit;
+    private Button startButton;
 
     /**
      * Construct the dialog.
      */
     public StartActivityDialogFragment() {
         state = new State(this);
-        state.setStartDate(LocalDateTime.now());
         state.setListener((activityName, startDate) -> {
             if (onStartActivityListener != null) {
                 onStartActivityListener.onStartActivity(activityName, startDate);
-            }
-            if (onDismissListener != null) {
-                onDismissListener.onDismiss(getDialog());
             }
         });
     }
@@ -59,15 +54,6 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment imple
         StartActivityDialogFragment dialogFragment = new StartActivityDialogFragment();
         dialogFragment.formatter = formatter;
         return dialogFragment;
-    }
-
-    /**
-     * Specify a listener to be called when dialog gets cancelled.
-     *
-     * @param onCancelListener listener to call
-     */
-    public void setOnCancelListener(DialogInterface.OnCancelListener onCancelListener) {
-        this.onCancelListener = onCancelListener;
     }
 
     /**
@@ -101,13 +87,9 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment imple
      * {@inheritDoc}
      */
     @Override
-    public void onCancel(@NonNull DialogInterface dialog) {
-        if (onCancelListener != null) {
-            onCancelListener.onCancel(dialog);
-        }
-        if (onDismissListener != null) {
-            onDismissListener.onDismiss(dialog);
-        }
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        state.initialize();
+        super.onDismiss(dialog);
     }
 
     /**
@@ -117,12 +99,21 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment imple
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ViewGroup viewGroup = (ViewGroup) inflater.inflate(R.layout.start_activity_dialog, container, false);
-        EditText activityNameEditText = viewGroup.findViewById(R.id.start_activity_dialog_activity_name);
+        activityNameEditText = viewGroup.findViewById(R.id.start_activity_dialog_activity_name);
+        timeEdit = viewGroup.findViewById(R.id.start_activity_dialog_time);
+        startButton = viewGroup.findViewById(R.id.start_activity_dialog_start_button);
+        return viewGroup;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
         String activityName = state.getActivityName();
         LocalDateTime startDate = state.getStartDate();
-        if (activityName != null && !activityName.isEmpty()) {
-            activityNameEditText.setText(activityName);
-        }
+        activityNameEditText.setText(activityName);
         activityNameEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (event == null) {
                 state.start();
@@ -132,21 +123,10 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment imple
             }
         });
         activityNameEditText.addTextChangedListener(new ActivityNameListener(state));
-        TimeEdit timeEdit = viewGroup.findViewById(R.id.start_activity_dialog_time);
         timeEdit.setFormatter(formatter);
         timeEdit.update(startDate);
         timeEdit.setOnDateChangeListener(state::setStartDate);
-        Button startButton = viewGroup.findViewById(R.id.start_activity_dialog_start_button);
         startButton.setOnClickListener(v -> state.start());
-        return viewGroup;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setOnDismiss(DialogInterface.OnDismissListener onDismiss) {
-        onDismissListener = onDismiss;
     }
 
     /**
@@ -159,7 +139,6 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment imple
      *
      */
     private class State {
-
         private StartActivityDialogFragment.OnStartActivityListener listener;
         private String activityName;
         private LocalDateTime startDate;
@@ -172,7 +151,7 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment imple
          */
         public State(StartActivityDialogFragment dialogFragment) {
             this.dialogFragment = dialogFragment;
-            activityName = "";
+            initialize();
         }
 
         /**
@@ -230,6 +209,13 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment imple
             dialogFragment.dismiss();
         }
 
+        /**
+         * Initialize the state and it's attributes' default values.
+         */
+        public void initialize() {
+            activityName = "";
+            startDate = LocalDateTime.now();
+        }
     }
 
     /**

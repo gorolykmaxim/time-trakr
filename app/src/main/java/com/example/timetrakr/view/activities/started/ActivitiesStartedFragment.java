@@ -10,13 +10,11 @@ import android.widget.Toast;
 
 import com.example.timetrakr.R;
 import com.example.timetrakr.model.activity.events.ActivityStartEvent;
-import com.example.timetrakr.view.activities.started.dialog.StartActivityDialogFactory;
-import com.example.timetrakr.view.activities.started.dialog.StartActivityDialogFragment;
-import com.example.timetrakr.view.common.dialog.DialogDisplayer;
 import com.example.timetrakr.view.common.recycler.EmptiableRecyclerView;
 import com.example.timetrakr.view.common.recycler.LeftRightCallback;
 import com.example.timetrakr.viewmodel.activities.started.ActivitiesStartedViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.gorolykmaxim.android.commons.dialog.DialogFragmentServant;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -33,8 +31,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
  * Displays list of activity start events, created today.
  */
 public class ActivitiesStartedFragment extends Fragment {
-
-    private DialogDisplayer<StartActivityDialogFragment> startActivityDialogDisplayer;
+    private StartActivityDialogFragment startActivityDialog;
+    private DialogFragmentServant dialogFragmentServant = new DialogFragmentServant();
 
     /**
      * {@inheritDoc}
@@ -73,11 +71,10 @@ public class ActivitiesStartedFragment extends Fragment {
             Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
         });
         // Initialize start activity dialog displayer.
-        StartActivityDialogFactory dialogFactory = new StartActivityDialogFactory(formatter);
-        dialogFactory.setOnStartActivityListener(viewModel::startNewActivity);
-        startActivityDialogDisplayer = new DialogDisplayer<>(dialogFactory, "start_activity_dialog");
+        startActivityDialog = StartActivityDialogFragment.create(formatter);
+        startActivityDialog.setOntStartActivityListener(viewModel::startNewActivity);
         // Open bottom sheet dialog to create new activity when clicking on a FAB.
-        startActivityButton.setOnClickListener(v -> startActivityDialogDisplayer.display(getChildFragmentManager()));
+        startActivityButton.setOnClickListener(v -> dialogFragmentServant.showIfNotShown(startActivityDialog, getChildFragmentManager()));
         /*
         Initialize recycler view that displays all started activities.
          */
@@ -118,8 +115,8 @@ public class ActivitiesStartedFragment extends Fragment {
         listener = viewHolder -> {
             adapter.notifyItemChanged(viewHolder.getAdapterPosition());
             ActivityStartViewHolder holder = (ActivityStartViewHolder)viewHolder;
-            StartActivityDialogFragment dialogFragment = startActivityDialogDisplayer.display(getChildFragmentManager());
-            dialogFragment.setActivityName(holder.getActivityName());
+            startActivityDialog.setActivityName(holder.getActivityName());
+            dialogFragmentServant.showIfNotShown(startActivityDialog, getChildFragmentManager());
         };
         callback.setRightSwipe(icon, background, listener);
         return root;
