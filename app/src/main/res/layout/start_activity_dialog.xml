@@ -16,7 +16,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <com.example.timetrakr.view.activities.started.ActivityStartTimeEdit
+        <com.example.timetrakr.view.activities.started.dialog.ActivityStartTimeEdit
             android:id="@+id/start_activity_dialog_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

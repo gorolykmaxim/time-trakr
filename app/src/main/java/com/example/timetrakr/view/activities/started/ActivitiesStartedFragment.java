@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.example.timetrakr.R;
 import com.example.timetrakr.model.activity.events.ActivityStartEvent;
+import com.example.timetrakr.view.activities.started.dialog.StartActivityDialogFragment;
 import com.example.timetrakr.view.common.recycler.EmptiableRecyclerView;
 import com.example.timetrakr.view.common.recycler.LeftRightCallback;
 import com.example.timetrakr.viewmodel.activities.started.ActivitiesStartedViewModel;
@@ -115,7 +116,7 @@ public class ActivitiesStartedFragment extends Fragment {
         listener = viewHolder -> {
             adapter.notifyItemChanged(viewHolder.getAdapterPosition());
             ActivityStartViewHolder holder = (ActivityStartViewHolder)viewHolder;
-            startActivityDialog.setActivityName(holder.getActivityName());
+            startActivityDialog.setDefaultActivityName(holder.getActivityName());
             dialogServant.showIfNotShown(startActivityDialog, getChildFragmentManager());
         };
         callback.setRightSwipe(icon, background, listener);
