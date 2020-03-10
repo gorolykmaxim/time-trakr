@@ -15,21 +15,18 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.timetrakr.R;
-import com.example.timetrakr.view.common.edit.TimeEdit;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * Dialog fragment, that allows user to start new activities.
  */
 public class StartActivityDialogFragment extends BottomSheetDialogFragment {
     private State state;
-    private DateTimeFormatter formatter;
     private OnStartActivityListener onStartActivityListener;
     private EditText activityNameEditText;
-    private TimeEdit timeEdit;
+    private ActivityStartTimeEdit timeEdit;
     private Button startButton;
 
     /**
@@ -42,18 +39,6 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment {
                 onStartActivityListener.onStartActivity(activityName, startDate);
             }
         });
-    }
-
-    /**
-     * Create new dialog instance.
-     *
-     * @param formatter formatter used to format displayer start date-time of the activity
-     * @return create dialog instance
-     */
-    public static StartActivityDialogFragment create(DateTimeFormatter formatter) {
-        StartActivityDialogFragment dialogFragment = new StartActivityDialogFragment();
-        dialogFragment.formatter = formatter;
-        return dialogFragment;
     }
 
     /**
@@ -112,7 +97,6 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment {
     public void onResume() {
         super.onResume();
         String activityName = state.getActivityName();
-        LocalDateTime startDate = state.getStartDate();
         activityNameEditText.setText(activityName);
         activityNameEditText.setOnEditorActionListener((v, actionId, event) -> {
             if (event == null) {
@@ -123,9 +107,6 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment {
             }
         });
         activityNameEditText.addTextChangedListener(new ActivityNameListener(state));
-        timeEdit.setFormatter(formatter);
-        timeEdit.update(startDate);
-        timeEdit.setOnDateChangeListener(state::setStartDate);
         startButton.setOnClickListener(v -> state.start());
     }
 
@@ -141,7 +122,6 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment {
     private class State {
         private StartActivityDialogFragment.OnStartActivityListener listener;
         private String activityName;
-        private LocalDateTime startDate;
         private StartActivityDialogFragment dialogFragment;
 
         /**
@@ -164,15 +144,6 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment {
         }
 
         /**
-         * Get start date-time of the activity being created.
-         *
-         * @return start date-time
-         */
-        public LocalDateTime getStartDate() {
-            return startDate;
-        }
-
-        /**
          * Set listener to be called, when activity creation triggers.
          *
          * @param listener listener to be called
@@ -191,20 +162,11 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment {
         }
 
         /**
-         * Set start date-time of the activity being created.
-         *
-         * @param startDate start date-time
-         */
-        public void setStartDate(LocalDateTime startDate) {
-            this.startDate = startDate;
-        }
-
-        /**
          * Trigger new activity creation and close the owner-dialog.
          */
         public void start() {
             if (listener != null) {
-                listener.onStartActivity(activityName, startDate);
+                listener.onStartActivity(activityName, dialogFragment.timeEdit.getCurrentDateTime());
             }
             dialogFragment.dismiss();
         }
@@ -214,7 +176,6 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment {
          */
         public void initialize() {
             activityName = "";
-            startDate = LocalDateTime.now();
         }
     }
 

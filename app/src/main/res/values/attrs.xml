@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="TimeEdit">
+    <declare-styleable name="ActivityStartTimeEdit">
         <attr name="display_format" format="string"/>
+        <attr name="date_time_format" format="string"/>
     </declare-styleable>
 </resources>

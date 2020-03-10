@@ -14,7 +14,7 @@ import com.example.timetrakr.view.common.recycler.EmptiableRecyclerView;
 import com.example.timetrakr.view.common.recycler.LeftRightCallback;
 import com.example.timetrakr.viewmodel.activities.started.ActivitiesStartedViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.gorolykmaxim.android.commons.dialog.DialogFragmentServant;
+import com.gorolykmaxim.android.commons.dialog.DialogServant;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -32,7 +32,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
  */
 public class ActivitiesStartedFragment extends Fragment {
     private StartActivityDialogFragment startActivityDialog;
-    private DialogFragmentServant dialogFragmentServant = new DialogFragmentServant();
+    private DialogServant dialogServant = new DialogServant();
 
     /**
      * {@inheritDoc}
@@ -48,7 +48,7 @@ public class ActivitiesStartedFragment extends Fragment {
         /*
         Create date-time formatter to format all dates displayed in the fragment.
          */
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(getString(R.string.date_time_format));
         /*
         Initialize "start new activity" button.
          */
@@ -71,10 +71,10 @@ public class ActivitiesStartedFragment extends Fragment {
             Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
         });
         // Initialize start activity dialog displayer.
-        startActivityDialog = StartActivityDialogFragment.create(formatter);
+        startActivityDialog = new StartActivityDialogFragment();
         startActivityDialog.setOntStartActivityListener(viewModel::startNewActivity);
         // Open bottom sheet dialog to create new activity when clicking on a FAB.
-        startActivityButton.setOnClickListener(v -> dialogFragmentServant.showIfNotShown(startActivityDialog, getChildFragmentManager()));
+        startActivityButton.setOnClickListener(v -> dialogServant.showIfNotShown(startActivityDialog, getChildFragmentManager()));
         /*
         Initialize recycler view that displays all started activities.
          */
@@ -116,7 +116,7 @@ public class ActivitiesStartedFragment extends Fragment {
             adapter.notifyItemChanged(viewHolder.getAdapterPosition());
             ActivityStartViewHolder holder = (ActivityStartViewHolder)viewHolder;
             startActivityDialog.setActivityName(holder.getActivityName());
-            dialogFragmentServant.showIfNotShown(startActivityDialog, getChildFragmentManager());
+            dialogServant.showIfNotShown(startActivityDialog, getChildFragmentManager());
         };
         callback.setRightSwipe(icon, background, listener);
         return root;
