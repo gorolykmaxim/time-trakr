@@ -6,27 +6,20 @@ import androidx.annotation.NonNull;
 
 import com.example.timetrakr.model.activity.events.ActivityStartEvent;
 import com.example.timetrakr.view.common.recycler.ListAdapter;
-import com.example.timetrakr.view.common.recycler.RecyclerViewAdapterStrategy;
-import com.example.timetrakr.view.common.recycler.SingleDifferenceFindingStrategy;
 import com.gorolykmaxim.android.commons.recyclerview.GenericViewHolder;
+import com.gorolykmaxim.android.commons.recyclerview.ImmutableItemDiffCallback;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Adapter used to display information about activity start events in the recycler view.
  */
 public class ActivitiesStartEventsAdapter extends ListAdapter<ActivityStartEvent, GenericViewHolder<StartedActivityCard>> {
-
-    private List<ActivityStartEvent> activityStartEvents;
-    private RecyclerViewAdapterStrategy strategy;
-
     /**
      * Construct adapter.
      */
     public ActivitiesStartEventsAdapter() {
-        activityStartEvents = new ArrayList<>();
-        strategy = new SingleDifferenceFindingStrategy();
+        super(new ImmutableItemDiffCallback());
     }
 
     /**
@@ -34,9 +27,7 @@ public class ActivitiesStartEventsAdapter extends ListAdapter<ActivityStartEvent
      */
     @Override
     public void displayList(List<ActivityStartEvent> activityStartEvents) {
-        List<ActivityStartEvent> oldActivityStartEvents = this.activityStartEvents;
-        this.activityStartEvents = activityStartEvents;
-        strategy.notifyDataSetChanged(this, oldActivityStartEvents, activityStartEvents);
+        submitList(activityStartEvents);
     }
 
     /**
@@ -53,16 +44,6 @@ public class ActivitiesStartEventsAdapter extends ListAdapter<ActivityStartEvent
      */
     @Override
     public void onBindViewHolder(@NonNull GenericViewHolder<StartedActivityCard> viewHolder, int i) {
-        ActivityStartEvent activityStartEvent = activityStartEvents.get(i);
-        viewHolder.getView().setActivityStartEvent(activityStartEvent);
+        viewHolder.getView().setActivityStartEvent(getItem(i));
     }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getItemCount() {
-        return activityStartEvents.size();
-    }
-
 }

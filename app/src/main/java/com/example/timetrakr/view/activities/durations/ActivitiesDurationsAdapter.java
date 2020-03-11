@@ -3,20 +3,18 @@ package com.example.timetrakr.view.activities.durations;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ListAdapter;
+
 import com.example.timetrakr.R;
 import com.example.timetrakr.model.activity.duration.ActivityDuration;
-import com.example.timetrakr.view.common.recycler.RecyclerViewAdapterStrategy;
-import com.example.timetrakr.view.common.recycler.SimpleStrategy;
+import com.gorolykmaxim.android.commons.recyclerview.ImmutableItemDiffCallback;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Adapter used to display information about durations of activities in a recycler view.
@@ -26,11 +24,9 @@ import androidx.recyclerview.widget.RecyclerView;
  * shorter than one minute are not important.</p>
  *
  */
-public class ActivitiesDurationsAdapter extends RecyclerView.Adapter<ActivityDurationViewHolder> {
+public class ActivitiesDurationsAdapter extends ListAdapter<ActivityDuration, ActivityDurationViewHolder> {
 
     private Set<String> selectedActivities;
-    private List<ActivityDuration> activityDurations;
-    private RecyclerViewAdapterStrategy strategy;
     private ActivityDurationViewHolderFactory factory;
     private OnItemSelectListener onItemSelectListener;
 
@@ -40,9 +36,8 @@ public class ActivitiesDurationsAdapter extends RecyclerView.Adapter<ActivityDur
      * @param factory factory used to create view holders for element of the recycler view.
      */
     public ActivitiesDurationsAdapter(ActivityDurationViewHolderFactory factory) {
-        activityDurations = new ArrayList<>();
+        super(new ImmutableItemDiffCallback());
         selectedActivities = new HashSet<>();
-        strategy = new SimpleStrategy();
         this.factory = factory;
     }
 
@@ -56,31 +51,18 @@ public class ActivitiesDurationsAdapter extends RecyclerView.Adapter<ActivityDur
     }
 
     /**
-     * Set strategy, used to notify observers of adapter about changes in list of activity
-     * durations, that should be displayed in recycler view.
-     * Default strategy is {@link SimpleStrategy}.
-     *
-     * @param strategy strategy to use
-     */
-    public void setStrategy(RecyclerViewAdapterStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    /**
      * Update list of activity durations that should be displayed in the recycler view.
      *
      * @param activityDurations new activity durations to display
      */
     public void updateActivityDurations(List<ActivityDuration> activityDurations) {
-        List<ActivityDuration> oldActivityDurations = this.activityDurations;
         // Show only activities which took more than one minute to complete, because
         // shorted ones are not important.
         Duration oneMinute = Duration.ofMinutes(1);
         activityDurations = activityDurations.stream()
                 .filter(a -> a.getDuration().compareTo(oneMinute) >= 0)
                 .collect(Collectors.toList());
-        this.activityDurations = activityDurations;
-        strategy.notifyDataSetChanged(this, oldActivityDurations, activityDurations);
+        submitList(activityDurations);
     }
 
     /**
@@ -114,21 +96,13 @@ public class ActivitiesDurationsAdapter extends RecyclerView.Adapter<ActivityDur
      */
     @Override
     public void onBindViewHolder(@NonNull ActivityDurationViewHolder viewHolder, int i) {
-        ActivityDuration activityDuration = activityDurations.get(i);
+        ActivityDuration activityDuration = getItem(i);
         viewHolder.update(activityDuration);
         if (selectedActivities.contains(activityDuration.getActivityName())) {
             viewHolder.select();
         } else {
             viewHolder.deselect();
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int getItemCount() {
-        return activityDurations.size();
     }
 
     /**
