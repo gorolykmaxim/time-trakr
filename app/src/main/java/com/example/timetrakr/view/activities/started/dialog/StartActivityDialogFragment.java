@@ -59,6 +59,7 @@ public class StartActivityDialogFragment extends BottomSheetDialogFragment {
      */
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
+        defaultActivityName = "";
         activityNameEditText.setText("");
         timeEdit.reset();
         super.onDismiss(dialog);
