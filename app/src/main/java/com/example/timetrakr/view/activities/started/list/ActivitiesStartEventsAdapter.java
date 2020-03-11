@@ -1,47 +1,32 @@
-package com.example.timetrakr.view.activities.started;
+package com.example.timetrakr.view.activities.started.list;
 
-import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.example.timetrakr.R;
+import androidx.annotation.NonNull;
+
 import com.example.timetrakr.model.activity.events.ActivityStartEvent;
 import com.example.timetrakr.view.common.recycler.ListAdapter;
 import com.example.timetrakr.view.common.recycler.RecyclerViewAdapterStrategy;
 import com.example.timetrakr.view.common.recycler.SingleDifferenceFindingStrategy;
+import com.gorolykmaxim.android.commons.recyclerview.GenericViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-
 /**
  * Adapter used to display information about activity start events in the recycler view.
  */
-public class ActivitiesStartEventsAdapter extends ListAdapter<ActivityStartEvent, ActivityStartViewHolder> {
+public class ActivitiesStartEventsAdapter extends ListAdapter<ActivityStartEvent, GenericViewHolder<StartedActivityCard>> {
 
     private List<ActivityStartEvent> activityStartEvents;
     private RecyclerViewAdapterStrategy strategy;
-    private ActivityStartViewHolderFactory factory;
 
     /**
      * Construct adapter.
-     *
-     * @param factory factory used to create view holder instances
      */
-    public ActivitiesStartEventsAdapter(ActivityStartViewHolderFactory factory) {
+    public ActivitiesStartEventsAdapter() {
         activityStartEvents = new ArrayList<>();
         strategy = new SingleDifferenceFindingStrategy();
-        this.factory = factory;
-    }
-
-    /**
-     * Specify strategy, used by the adapter to determine which items of the recycler view
-     * have changed and should be updated. Default strategy is {@link SingleDifferenceFindingStrategy}.
-     *
-     * @param strategy strategy to use
-     */
-    public void setStrategy(RecyclerViewAdapterStrategy strategy) {
-        this.strategy = strategy;
     }
 
     /**
@@ -59,18 +44,17 @@ public class ActivitiesStartEventsAdapter extends ListAdapter<ActivityStartEvent
      */
     @NonNull
     @Override
-    public ActivityStartViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        ViewGroup activityView = (ViewGroup) LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.deletable_activity_view, viewGroup, false);
-        return factory.create(activityView);
+    public GenericViewHolder<StartedActivityCard> onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
+        return new GenericViewHolder<>(new StartedActivityCard(viewGroup.getContext()));
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onBindViewHolder(@NonNull ActivityStartViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull GenericViewHolder<StartedActivityCard> viewHolder, int i) {
         ActivityStartEvent activityStartEvent = activityStartEvents.get(i);
-        viewHolder.update(activityStartEvent);
+        viewHolder.getView().setActivityStartEvent(activityStartEvent);
     }
 
     /**

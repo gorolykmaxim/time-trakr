@@ -8,18 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.example.timetrakr.R;
-import com.example.timetrakr.model.activity.events.ActivityStartEvent;
-import com.example.timetrakr.view.activities.started.dialog.StartActivityDialogFragment;
-import com.example.timetrakr.view.common.recycler.EmptiableRecyclerView;
-import com.example.timetrakr.view.common.recycler.LeftRightCallback;
-import com.example.timetrakr.viewmodel.activities.started.ActivitiesStartedViewModel;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.gorolykmaxim.android.commons.dialog.DialogServant;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -27,6 +15,21 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.example.timetrakr.R;
+import com.example.timetrakr.model.activity.events.ActivityStartEvent;
+import com.example.timetrakr.view.activities.started.dialog.StartActivityDialogFragment;
+import com.example.timetrakr.view.activities.started.list.ActivitiesStartEventsAdapter;
+import com.example.timetrakr.view.activities.started.list.StartedActivityCard;
+import com.example.timetrakr.view.common.recycler.EmptiableRecyclerView;
+import com.example.timetrakr.view.common.recycler.LeftRightCallback;
+import com.example.timetrakr.viewmodel.activities.started.ActivitiesStartedViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.gorolykmaxim.android.commons.dialog.DialogServant;
+import com.gorolykmaxim.android.commons.recyclerview.GenericViewHolder;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Displays list of activity start events, created today.
@@ -82,8 +85,7 @@ public class ActivitiesStartedFragment extends Fragment {
         EmptiableRecyclerView<ActivityStartEvent> recyclerView = root.findViewById(R.id.activities_started_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         // Setup recycler view adapter.
-        ActivityStartViewHolderFactory viewHolderFactory = new ActivityStartViewHolderFactory(getString(R.string.since), formatter);
-        ActivitiesStartEventsAdapter adapter = new ActivitiesStartEventsAdapter(viewHolderFactory);
+        ActivitiesStartEventsAdapter adapter = new ActivitiesStartEventsAdapter();
         recyclerView.setListAdapter(adapter);
         // Update recycler view adapter when list of today's activity start events is updated.
         viewModel.getActivityStartEvents().observe(this, recyclerView::displayList);
@@ -96,9 +98,10 @@ public class ActivitiesStartedFragment extends Fragment {
         Drawable icon = getResources().getDrawable(R.drawable.ic_delete_forever_black_24dp, null);
         ColorDrawable background = new ColorDrawable(getResources().getColor(R.color.deleteRed, null));
         LeftRightCallback.OnSwipeListener listener = viewHolder -> {
-            ActivityStartViewHolder holder = (ActivityStartViewHolder)viewHolder;
-            String name = holder.getActivityName();
-            LocalDateTime dateTime = holder.getStartDate();
+            StartedActivityCard view = GenericViewHolder.getViewOf(viewHolder);
+            ActivityStartEvent activityStartEvent = view.getActivityStartEvent();
+            String name = activityStartEvent.getActivityName();
+            LocalDateTime dateTime = activityStartEvent.getStartDate();
             String warning = String.format(getString(R.string.delete_activity_warning), name, dateTime.format(formatter));
             AlertDialog dialog = new AlertDialog.Builder(getActivity())
                     .setMessage(warning)
@@ -115,8 +118,9 @@ public class ActivitiesStartedFragment extends Fragment {
         background = new ColorDrawable(getResources().getColor(R.color.copyGreen, null));
         listener = viewHolder -> {
             adapter.notifyItemChanged(viewHolder.getAdapterPosition());
-            ActivityStartViewHolder holder = (ActivityStartViewHolder)viewHolder;
-            startActivityDialog.setDefaultActivityName(holder.getActivityName());
+            StartedActivityCard view = GenericViewHolder.getViewOf(viewHolder);
+            ActivityStartEvent activityStartEvent = view.getActivityStartEvent();
+            startActivityDialog.setDefaultActivityName(activityStartEvent.getActivityName());
             dialogServant.showIfNotShown(startActivityDialog, getChildFragmentManager());
         };
         callback.setRightSwipe(icon, background, listener);
